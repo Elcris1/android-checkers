@@ -3,9 +3,8 @@ package com.example.checkers
 import androidx.compose.runtime.rememberUpdatedState
 import kotlinx.coroutines.awaitCancellation
 
-class Cell(var type: CellType, var state: CellState, ) {
+class Cell(var type: CellType, var state: CellState, var position: Position = Position(0,0)) {
     var piece: Piece? = null
-    lateinit var position: Position
     fun getCellType(): CellType {
         return  this.type
     }
@@ -51,13 +50,16 @@ class Cell(var type: CellType, var state: CellState, ) {
     override fun toString(): String {
         var str = ""
         if(this.type == CellType.FORBIDDEN) {
-            str += "X"
+            str += "X-"
         } else if(this.type == CellType.YELLOW) {
-            str += "Y"
+            str += "Y-"
         } else {
-            str += "B"
+            str += "B-"
         }
+        str += position
+
         if(this.piece != null) {
+            str += "-"
             str += this.piece!!.team
         }
         return str
@@ -66,22 +68,20 @@ class Cell(var type: CellType, var state: CellState, ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Cell) return false
+        var result = false
 
         return type == other.type &&
                 state == other.state &&
                 piece == other.piece &&
                 position == other.position
+
     }
 
     override fun hashCode(): Int {
         var result = type.hashCode()
         result = 31 * result + state.hashCode()
         result = 31 * result + (piece?.hashCode() ?: 0)
-        if (::position.isInitialized) {
-            result = 31 * result + position.hashCode()
-        } else {
-            result = 31 * result + 0
-        }
+        result = 31 * result + position.hashCode()
         return result
     }
 
@@ -96,36 +96,36 @@ class Cell(var type: CellType, var state: CellState, ) {
         fun fromCode(code: Char): Cell {
             when (code) {
                 forbiddenCode -> {
-                    return Cell(CellType.FORBIDDEN, CellState.EMPTY)
+                    return Cell(CellType.FORBIDDEN, CellState.EMPTY, Position(0,0))
                 }
                 yellowEmptyCode -> {
-                    return Cell(CellType.YELLOW, CellState.EMPTY)
+                    return Cell(CellType.YELLOW, CellState.EMPTY, Position(0,0))
                 }
                 brownEmptyCode -> {
-                    return Cell(CellType.BROWN, CellState.EMPTY)
+                    return Cell(CellType.BROWN, CellState.EMPTY, Position(0,0))
                 }
                 brownWhitePawn -> {
-                    val cell = Cell(CellType.BROWN, CellState.FILLED)
+                    val cell = Cell(CellType.BROWN, CellState.FILLED, Position(0,0))
                     cell.placePiece(Piece(PieceType.PAWN, Teams.WHITE))
                     return cell
                 }
                 brownBlackPawn -> {
-                    val cell = Cell(CellType.BROWN, CellState.FILLED)
+                    val cell = Cell(CellType.BROWN, CellState.FILLED, Position(0,0))
                     cell.placePiece(Piece(PieceType.PAWN, Teams.BLACK))
                     return cell
                 }
                 brownWhiteDame -> {
-                    val cell = Cell(CellType.BROWN, CellState.FILLED)
+                    val cell = Cell(CellType.BROWN, CellState.FILLED, Position(0,0))
                     cell.placePiece(Piece(PieceType.DAME, Teams.WHITE))
                     return cell
                 }
                 brownBlackDame -> {
-                    val cell = Cell(CellType.BROWN, CellState.FILLED)
+                    val cell = Cell(CellType.BROWN, CellState.FILLED, Position(0,0))
                     cell.placePiece(Piece(PieceType.DAME, Teams.BLACK))
                     return cell
                 }
                 else -> {
-                    return Cell(CellType.FORBIDDEN, CellState.EMPTY)
+                    return Cell(CellType.FORBIDDEN, CellState.EMPTY, Position(0,0))
                 }
             }
 

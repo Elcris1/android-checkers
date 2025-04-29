@@ -71,6 +71,8 @@ fun emptyBoard(): SnapshotStateList<SnapshotStateList<String>> {
 
 @Composable
 fun MyApp(modifier: Modifier = Modifier) {
+
+    //TODO: que el jugador pugui elegir amb quines fitxes jugar.
     val positions = emptyBoard()
     for (row in positions) {
         Log.d("Tablero", row.toString())

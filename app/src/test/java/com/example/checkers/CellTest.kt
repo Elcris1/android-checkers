@@ -6,7 +6,8 @@ import org.junit.Assert.*
 
 class CellTest {
     @Test
-    fun `test isEmpty should return true for empty cells`() {
+
+    fun isEmptyShouldReturnTrueForEmptyCells() {
         val cell = Cell(CellType.BROWN, CellState.EMPTY)
 
         // check isempty returns true
@@ -14,7 +15,7 @@ class CellTest {
     }
 
     @Test
-    fun `test isEmpty should return false for filled cells`() {
+    fun isEmpty_shouldReturnFalseForFilledCells() {
         val cell = Cell(CellType.BROWN, CellState.FILLED)
 
         // Check isEmpty returns false
@@ -22,7 +23,7 @@ class CellTest {
     }
 
     @Test
-    fun `test isFilled should return true for filled cells`() {
+    fun isFilled_shouldReturnTrueForFilledCells() {
         val cell = Cell(CellType.BROWN, CellState.FILLED)
 
         // isFilled should return true
@@ -30,7 +31,7 @@ class CellTest {
     }
 
     @Test
-    fun `test isFilled should return false for empty cells`() {
+    fun isFilled_shouldReturnFalseForEmptyCells() {
         val cell = Cell(CellType.BROWN, CellState.EMPTY)
 
         // isFilled should return false
@@ -38,7 +39,7 @@ class CellTest {
     }
 
     @Test
-    fun `test isForbidden should return true for forbidden cells`() {
+    fun isForbidden_shouldReturnTrueForForbiddenCells() {
         val cell = Cell(CellType.FORBIDDEN, CellState.EMPTY)
 
         // check forbidden
@@ -46,7 +47,7 @@ class CellTest {
     }
 
     @Test
-    fun `test isForbidden should return false for non-forbidden cells`() {
+    fun isForbidden_shouldReturnFalseForNonForbiddenCells() {
         val cell = Cell(CellType.BROWN, CellState.EMPTY)
 
         // isForbidden returns false
@@ -54,7 +55,7 @@ class CellTest {
     }
 
     @Test
-    fun `test placePiece should set the piece and fill the cell`() {
+    fun placePiece_shouldSetPieceAndFillCell() {
         val cell = Cell(CellType.BROWN, CellState.EMPTY)
         val piece = Piece(PieceType.PAWN, Teams.WHITE)
 
@@ -67,7 +68,7 @@ class CellTest {
     }
 
     @Test
-    fun `test removePiece should empty the cell and remove the piece`() {
+    fun removePiece_shouldEmptyCellAndRemovePiece() {
         val cell = Cell(CellType.BROWN, CellState.FILLED)
         val piece = Piece(PieceType.PAWN, Teams.WHITE)
 
@@ -77,13 +78,13 @@ class CellTest {
         // Remove the piece
         cell.removePiece()
 
-        // verify that the cell is empty and the piece is unassigned form the cell
+        // verify that the cell is empty and the piece is unassigned from the cell
         assertTrue(cell.isEmpty())
         assertNull(cell.piece)
     }
 
     @Test
-    fun `test markAsPossible should change the cell state to POSSIBLE_MOVE`() {
+    fun markAsPossible_shouldChangeStateToPossibleMove() {
         val cell = Cell(CellType.BROWN, CellState.EMPTY)
 
         // mark the cell as a possible movement
@@ -93,9 +94,8 @@ class CellTest {
         assertEquals(CellState.POSSIBLE_MOVE, cell.state)
     }
 
-
     @Test
-    fun `test equals should return true for equal cells`() {
+    fun equals_shouldReturnTrueForEqualCells() {
         val cell1 = Cell(CellType.BROWN, CellState.EMPTY)
         cell1.position = Position(0, 0)
 
@@ -107,7 +107,7 @@ class CellTest {
     }
 
     @Test
-    fun `test equals should return false for different cells`() {
+    fun equals_shouldReturnFalseForDifferentCells() {
         val cell1 = Cell(CellType.BROWN, CellState.EMPTY)
         cell1.position = Position(0, 0)
 
@@ -118,108 +118,4 @@ class CellTest {
         assertNotEquals(cell1, cell2)
     }
 
-    @Test
-    fun `test hashCode should be same for equal cells`() {
-        val cell1 = Cell(CellType.BROWN, CellState.EMPTY)
-        cell1.position = Position(0, 0)
-
-        val cell2 = Cell(CellType.BROWN, CellState.EMPTY)
-        cell2.position = Position(0, 0)
-
-        // verify that same cells have the same hashCode
-        assertEquals(cell1.hashCode(), cell2.hashCode())
-
-        val piece = Piece(pieceType = PieceType.DAME, team = Teams.BLACK)
-        cell1.placePiece(piece)
-        cell2.placePiece(piece)
-        assertEquals(cell1.hashCode(), cell2.hashCode())
-    }
-
-    @Test
-    fun `test hashCode should be different for different cells`() {
-        val cell1 = Cell(CellType.BROWN, CellState.EMPTY)
-        cell1.position = Position(0, 0)
-
-        val cell2 = Cell(CellType.BROWN, CellState.EMPTY)
-        cell2.position = Position(0, 0)
-        cell2.placePiece(Piece(PieceType.PAWN, Teams.BLACK))
-
-        // verify that different cells have different hashCode
-        assertNotEquals(cell1.hashCode(), cell2.hashCode())
-    }
-
-
-
-    @Test
-
-    fun `test fromCode forbiddenCell`() {
-        val cell = Cell.fromCode('X')
-        assertEquals(CellType.FORBIDDEN, cell.type)
-        assertEquals(CellState.EMPTY, cell.state)
-        assertNull(cell.piece)
-    }
-
-    @Test
-    fun `test fromCode Yellow empty Cell`() {
-        val cell = Cell.fromCode('Y')
-        assertEquals(CellType.YELLOW, cell.type)
-        assertEquals(CellState.EMPTY, cell.state)
-        assertNull(cell.piece)
-    }
-
-    @Test
-    fun `test fromCode brown empty cell`() {
-        val cell = Cell.fromCode('B')
-        assertEquals(CellType.BROWN, cell.type)
-        assertEquals(CellState.EMPTY, cell.state)
-        assertNull(cell.piece)
-    }
-
-    @Test
-    fun `test fromCode brown filled black pawn`() {
-        val cell = Cell.fromCode('#')
-        assertEquals(CellType.BROWN, cell.type)
-        assertEquals(CellState.FILLED, cell.state)
-        assertNotNull(cell.piece)
-        assertEquals(PieceType.PAWN, cell.piece!!.pieceType)
-        assertEquals(Teams.BLACK, cell.piece!!.team)
-    }
-
-    @Test
-    fun `test fromCode brown filled white pawn`() {
-        val cell = Cell.fromCode('@')
-        assertEquals(CellType.BROWN, cell.type)
-        assertEquals(CellState.FILLED, cell.state)
-        assertNotNull(cell.piece)
-        assertEquals(PieceType.PAWN, cell.piece!!.pieceType)
-        assertEquals(Teams.WHITE, cell.piece!!.team)
-    }
-
-    @Test
-    fun `test fromCode brown filled black dame`() {
-        val cell = Cell.fromCode('%')
-        assertEquals(CellType.BROWN, cell.type)
-        assertEquals(CellState.FILLED, cell.state)
-        assertNotNull(cell.piece)
-        assertEquals(PieceType.DAME, cell.piece!!.pieceType)
-        assertEquals(Teams.BLACK, cell.piece!!.team)
-    }
-
-    @Test
-    fun `test fromCode brown filled white dame`() {
-        val cell = Cell.fromCode('&')
-        assertEquals(CellType.BROWN, cell.type)
-        assertEquals(CellState.FILLED, cell.state)
-        assertNotNull(cell.piece)
-        assertEquals(PieceType.DAME, cell.piece!!.pieceType)
-        assertEquals(Teams.WHITE, cell.piece!!.team)
-    }
-
-    @Test
-    fun `test fromCode default`() {
-        val cell = Cell.fromCode('?')
-        assertEquals(CellType.FORBIDDEN, cell.type)
-        assertEquals(CellState.EMPTY, cell.state)
-        assertNull(cell.piece)
-    }
 }

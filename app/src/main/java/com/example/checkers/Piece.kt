@@ -1,7 +1,6 @@
 package com.example.checkers
 
-class Piece(var pieceType: PieceType = PieceType.PAWN, val team: Teams) {
-    lateinit var position: Position
+class Piece(var pieceType: PieceType = PieceType.PAWN, val team: Teams, var position: Position = Position(0,0)) {
     fun isDame(): Boolean {
         return this.pieceType == PieceType.DAME
     }
@@ -24,7 +23,11 @@ class Piece(var pieceType: PieceType = PieceType.PAWN, val team: Teams) {
 
     override fun hashCode(): Int {
 
-        return pieceType.hashCode() + team.hashCode() + if (::position.isInitialized) position.hashCode() else 0
+        return pieceType.hashCode() + team.hashCode() + position.hashCode()
+    }
+
+    override fun toString(): String {
+        return "$team$pieceType"
     }
 
 }
