@@ -23,7 +23,8 @@ class Piece(var pieceType: PieceType = PieceType.PAWN, val team: Teams) {
     }
 
     override fun hashCode(): Int {
-        return pieceType.hashCode() + team.hashCode() + position.hashCode()
+
+        return pieceType.hashCode() + team.hashCode() + if (::position.isInitialized) position.hashCode() else 0
     }
 
 }
