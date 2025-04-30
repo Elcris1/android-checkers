@@ -117,5 +117,91 @@ class CellTest {
         // verify inequality
         assertNotEquals(cell1, cell2)
     }
+    @Test
+    fun testHashCodeShouldBeDifferentForDifferentCells() {
+        val cell1 = Cell(CellType.BROWN, CellState.EMPTY)
+        cell1.position = Position(0, 0)
+
+        val cell2 = Cell(CellType.BROWN, CellState.EMPTY)
+        cell2.position = Position(0, 0)
+        cell2.placePiece(Piece(PieceType.PAWN, Teams.BLACK))
+
+        // Verificar que las celdas distintas tengan hashCode diferente
+        assertNotEquals(cell1.hashCode(), cell2.hashCode())
+    }
+
+    @Test
+    fun testFromCodeForbiddenCell() {
+        val cell = Cell.fromCode('X')
+        assertEquals(CellType.FORBIDDEN, cell.type)
+        assertEquals(CellState.EMPTY, cell.state)
+        assertNull(cell.piece)
+    }
+
+    @Test
+    fun testFromCodeYellowEmptyCell() {
+        val cell = Cell.fromCode('Y')
+        assertEquals(CellType.YELLOW, cell.type)
+        assertEquals(CellState.EMPTY, cell.state)
+        assertNull(cell.piece)
+    }
+
+    @Test
+    fun testFromCodeBrownEmptyCell() {
+        val cell = Cell.fromCode('B')
+        assertEquals(CellType.BROWN, cell.type)
+        assertEquals(CellState.EMPTY, cell.state)
+        assertNull(cell.piece)
+    }
+
+    @Test
+    fun testFromCodeBrownFilledBlackPawn() {
+        val cell = Cell.fromCode('#')
+        assertEquals(CellType.BROWN, cell.type)
+        assertEquals(CellState.FILLED, cell.state)
+        assertNotNull(cell.piece)
+        assertEquals(PieceType.PAWN, cell.piece!!.pieceType)
+        assertEquals(Teams.BLACK, cell.piece!!.team)
+    }
+
+    @Test
+    fun testFromCodeBrownFilledWhitePawn() {
+        val cell = Cell.fromCode('@')
+        assertEquals(CellType.BROWN, cell.type)
+        assertEquals(CellState.FILLED, cell.state)
+        assertNotNull(cell.piece)
+        assertEquals(PieceType.PAWN, cell.piece!!.pieceType)
+        assertEquals(Teams.WHITE, cell.piece!!.team)
+    }
+
+    @Test
+    fun testFromCodeBrownFilledBlackDame() {
+        val cell = Cell.fromCode('%')
+        assertEquals(CellType.BROWN, cell.type)
+        assertEquals(CellState.FILLED, cell.state)
+        assertNotNull(cell.piece)
+        assertEquals(PieceType.DAME, cell.piece!!.pieceType)
+        assertEquals(Teams.BLACK, cell.piece!!.team)
+    }
+
+    @Test
+    fun testFromCodeBrownFilledWhiteDame() {
+        val cell = Cell.fromCode('&')
+        assertEquals(CellType.BROWN, cell.type)
+        assertEquals(CellState.FILLED, cell.state)
+        assertNotNull(cell.piece)
+        assertEquals(PieceType.DAME, cell.piece!!.pieceType)
+        assertEquals(Teams.WHITE, cell.piece!!.team)
+    }
+
+    @Test
+    fun testFromCodeDefault() {
+        val cell = Cell.fromCode('?')
+        assertEquals(CellType.FORBIDDEN, cell.type)
+        assertEquals(CellState.EMPTY, cell.state)
+        assertNull(cell.piece)
+    }
+
+
 
 }
