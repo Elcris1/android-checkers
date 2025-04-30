@@ -55,6 +55,35 @@ class CellTest {
     }
 
     @Test
+    fun test_isPossibleMovement() {
+        var cell = Cell(type = CellType.BROWN, state = CellState.POSSIBLE_MOVE)
+        assertTrue(cell.isPossibleMovement())
+
+        cell = Cell(type = CellType.BROWN, state = CellState.POSSIBLE_KILL)
+        assertTrue(cell.isPossibleMovement())
+
+        cell = Cell(type = CellType.BROWN, state = CellState.FILLED)
+        assertFalse(cell.isPossibleMovement())
+    }
+
+    @Test
+    fun test_isKillMove() {
+        var cell = Cell(type = CellType.BROWN, state = CellState.POSSIBLE_KILL)
+        assertTrue(cell.isKillMovement())
+
+        cell = Cell(type = CellType.BROWN, state = CellState.POSSIBLE_MOVE)
+        assertFalse(cell.isKillMovement())
+    }
+
+    @Test
+    fun test_markAsKill() {
+        val cell = Cell(type = CellType.BROWN, state = CellState.POSSIBLE_MOVE)
+        cell.markAsKillablePossible()
+        assertEquals(cell.state, CellState.POSSIBLE_KILL)
+
+    }
+
+    @Test
     fun placePiece_shouldSetPieceAndFillCell() {
         val cell = Cell(CellType.BROWN, CellState.EMPTY)
         val piece = Piece(PieceType.PAWN, Teams.WHITE)
@@ -76,11 +105,12 @@ class CellTest {
         cell.placePiece(piece)
 
         // Remove the piece
-        cell.removePiece()
+        val removedPiece = cell.removePiece()
 
         // verify that the cell is empty and the piece is unassigned from the cell
         assertTrue(cell.isEmpty())
         assertNull(cell.piece)
+        assertEquals(piece, removedPiece)
     }
 
     @Test

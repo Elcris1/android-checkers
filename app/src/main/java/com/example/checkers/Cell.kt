@@ -14,7 +14,7 @@ class Cell(var type: CellType, var state: CellState, var position: Position = Po
     }
 
     fun isEmpty() : Boolean {
-        return state == CellState.EMPTY && !isForbidden()
+        return state == CellState.EMPTY && !isForbidden() && piece == null
     }
 
     fun isFilled() : Boolean {
@@ -22,6 +22,14 @@ class Cell(var type: CellType, var state: CellState, var position: Position = Po
     }
     fun isForbidden(): Boolean {
         return  type == CellType.FORBIDDEN
+    }
+
+    fun isPossibleMovement(): Boolean {
+        return  state == CellState.POSSIBLE_MOVE || state == CellState.POSSIBLE_KILL
+    }
+
+    fun isKillMovement(): Boolean {
+        return state == CellState.POSSIBLE_KILL
     }
 
     fun setEmpty() {
@@ -38,13 +46,26 @@ class Cell(var type: CellType, var state: CellState, var position: Position = Po
         this.setFilled()
     }
 
-    fun removePiece() {
+    fun removePiece() : Piece? {
+        val removed = this.piece
         this.piece = null
         this.setEmpty()
+        return removed
     }
 
     fun markAsPossible(){
         this.state = CellState.POSSIBLE_MOVE
+    }
+
+    fun markAsKillablePossible() {
+        this.state = CellState.POSSIBLE_KILL
+    }
+
+    fun  changePosition(x: Int, y: Int){
+        position.setPosition(x, y)
+        if (piece != null){
+            piece!!.position.setPosition(x,y)
+        }
     }
 
     override fun toString(): String {
@@ -68,7 +89,6 @@ class Cell(var type: CellType, var state: CellState, var position: Position = Po
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Cell) return false
-        var result = false
 
         return type == other.type &&
                 state == other.state &&
@@ -86,13 +106,13 @@ class Cell(var type: CellType, var state: CellState, var position: Position = Po
     }
 
     companion object {
-        private const val forbiddenCode: Char = 'X'
-        private const val yellowEmptyCode: Char = 'Y'
-        private const val brownEmptyCode: Char = 'B'
-        private const val brownBlackPawn: Char = '#'
-        private const val brownWhitePawn: Char = '@'
-        private const val brownBlackDame: Char = '%'
-        private const val brownWhiteDame: Char = '&'
+        const val forbiddenCode: Char = 'X'
+        const val yellowEmptyCode: Char = 'Y'
+        const val brownEmptyCode: Char = 'B'
+        const val brownBlackPawn: Char = '#'
+        const val brownWhitePawn: Char = '@'
+        const val brownBlackDame: Char = '%'
+        const val brownWhiteDame: Char = '&'
         fun fromCode(code: Char): Cell {
             when (code) {
                 forbiddenCode -> {
