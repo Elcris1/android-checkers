@@ -43,6 +43,7 @@ class Cell(var type: CellType, var state: CellState, var position: Position = Po
 
     fun placePiece(piece: Piece) {
         this.piece = piece
+        piece.position = position
         this.setFilled()
     }
 
