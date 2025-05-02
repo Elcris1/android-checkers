@@ -33,11 +33,11 @@ class Cell(var type: CellType, var state: CellState, var position: Position = Po
     }
 
     fun setEmpty() {
-        if (this.state != CellState.EMPTY) this.state = CellState.EMPTY
+        this.state = CellState.EMPTY
     }
 
     fun setFilled() {
-        if(this.state != CellState.FILLED) this.state = CellState.FILLED
+        this.state = CellState.FILLED
     }
 
 

@@ -27,7 +27,7 @@ class Piece(var pieceType: PieceType = PieceType.PAWN, val team: Teams, var posi
     }
 
     override fun toString(): String {
-        return "$team$pieceType"
+        return "$team$pieceType$position"
     }
 
 }

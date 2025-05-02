@@ -1,6 +1,7 @@
 package com.example.checkers
 
 import android.inputmethodservice.Keyboard.Row
+import android.util.Log
 import java.nio.channels.NotYetBoundException
 
 class Board {
@@ -8,9 +9,10 @@ class Board {
     // var that enables to know if user is in the middle of movement.
     var is_piece_selected: Boolean = false
     //TODO: list of marked as possible option, cells of which state is not changed should become original state
-
+    var modifiedCells: MutableList<Cell> = mutableListOf()
     //TODO: list of alive pieces -> check existence of killability, calculate al possible movements to select one at random.
-
+    var blackPieces: MutableList<Piece> = mutableListOf()
+    var whitePieces: MutableList<Piece> = mutableListOf()
     fun createStartingBoard() {
         cells = Array(10){Array(10) {Cell(type = CellType.FORBIDDEN, state = CellState.EMPTY)} }
 
@@ -29,8 +31,17 @@ class Board {
                     }
                     //SET PIECE OF THE CELL
                     if((x + y) % 2 == 0 && (y <= 3 || y >= 6)) {
-                        if(y<=3) cell.placePiece(piece = Piece(PieceType.PAWN, Teams.BLACK, pos))
-                        else cell.placePiece(piece = Piece(PieceType.PAWN, Teams.WHITE, pos))
+                        var piece: Piece
+                        if(y<=3) {
+                            piece = Piece(PieceType.PAWN, Teams.BLACK, pos)
+                            cell.placePiece(piece = piece)
+                            blackPieces.add(piece)
+                        }
+                        else {
+                            piece = Piece(PieceType.PAWN, Teams.WHITE, pos)
+                            cell.placePiece(piece = piece)
+                            whitePieces.add(piece)
+                        }
                     }
                 }
 
@@ -84,7 +95,7 @@ class Board {
         }
     }
 
-    fun showPossibleMovement(x: Int, y: Int, teams: Teams = Teams.WHITE) {
+    fun showPossibleMovement(x: Int, y: Int, teams: Teams = Teams.WHITE) : Int{
         //TODO: Finish test
         val piece = cells[y][x].piece!!
         //if is dame => dame movements
@@ -95,35 +106,45 @@ class Board {
         if(canKill(x, y, piece)) {
             return showKillableMoves(x, y, piece)
         }
-
+        var possibilities = 0
         //Mark possible moves
         val leftCell = getDiagonalLeft(x, y, teams)
         if (leftCell.isEmpty()) {
             leftCell.markAsPossible()
+            modifiedCells.add(leftCell)
+            possibilities+=1
         }
         val rightCell = getDiagonalRight(x,y, teams)
         if (rightCell.isEmpty()) {
             rightCell.markAsPossible()
+            modifiedCells.add(rightCell)
+            possibilities+=1
         }
+        return possibilities
 
 
     }
 
-    fun showPossibleDameMovements(x: Int, y: Int, piece: Piece) {
+    fun showPossibleDameMovements(x: Int, y: Int, piece: Piece): Int {
         //TODO: test
         if(canKill(x, y, piece)) {
             return showKillableDameMoves(x,y,piece)
         }
         //Superior diagonals
         //Get diagonalLeft
+        var possibilities = 0
         var cell = getDiagonalLeft(x, y, Teams.WHITE)
         if (cell.isEmpty()) {
             cell.markAsPossible()
+            modifiedCells.add(cell)
+            possibilities += 1
         }
         //Get diagonalRight
         cell = getDiagonalRight(x,y, Teams.WHITE)
         if (cell.isEmpty()) {
             cell.markAsPossible()
+            modifiedCells.add(cell)
+            possibilities += 1
         }
 
         //InferiorDiagonals
@@ -131,38 +152,69 @@ class Board {
         cell = getDiagonalLeft(x,y, Teams.BLACK)
         if (cell.isEmpty()) {
             cell.markAsPossible()
+            modifiedCells.add(cell)
+            possibilities += 1
+
         }
 
         //DiagonalRight
         cell = getDiagonalRight(x,y, Teams.BLACK)
         if (cell.isEmpty()) {
             cell.markAsPossible()
+            modifiedCells.add(cell)
+            possibilities += 1
         }
+        return possibilities
     }
 
-    fun showKillableMoves(x: Int, y: Int, piece: Piece) {
+    fun showKillableMoves(x: Int, y: Int, piece: Piece): Int {
         //TODO: test
+        var cell: Cell
+        var possibilities = 0
         if(isDiagonalLeftKillable(x, y, piece)) {
-            getFarDiagonalLeft(x, y, piece.team).markAsKillablePossible()
+            cell = getFarDiagonalLeft(x, y, piece.team)
+            Log.d("white piece", "diagonal left should be killable")
+            cell.markAsKillablePossible()
+            modifiedCells.add(cell)
+            possibilities += 1
         }
         if(isDiagonalRightKillable(x, y, piece)) {
-            getFarDiagonalRight(x,y, piece.team).markAsKillablePossible()
+            cell = getFarDiagonalRight(x,y, piece.team)
+            cell.markAsKillablePossible()
+            modifiedCells.add(cell)
+            possibilities += 1
         }
+        return possibilities
     }
-    fun showKillableDameMoves(x: Int, y: Int, piece: Piece) {
+    fun showKillableDameMoves(x: Int, y: Int, piece: Piece): Int {
         //TODO: test
+        var cell: Cell
+        var possibilities = 0;
         if(isDiagonalLeftKillable(x, y, piece, Teams.WHITE)) {
-            getFarDiagonalLeft(x, y, Teams.WHITE).markAsKillablePossible()
+            cell = getFarDiagonalLeft(x, y, Teams.WHITE)
+            cell.markAsKillablePossible()
+            modifiedCells.add(cell)
+            possibilities += 1
         }
         if (isDiagonalLeftKillable(x, y, piece, Teams.BLACK)){
-            getFarDiagonalLeft(x,y,Teams.BLACK).markAsKillablePossible()
+            cell = getFarDiagonalLeft(x,y,Teams.BLACK)
+            cell.markAsKillablePossible()
+            modifiedCells.add(cell)
+            possibilities += 1
         }
         if (isDiagonalRightKillable(x, y, piece, Teams.WHITE)){
-            getFarDiagonalRight(x,y,Teams.WHITE).markAsKillablePossible()
+            cell = getFarDiagonalRight(x,y,Teams.WHITE)
+            cell.markAsKillablePossible()
+            modifiedCells.add(cell)
+            possibilities += 1
         }
         if (isDiagonalRightKillable(x, y, piece, Teams.BLACK)){
-            getFarDiagonalRight(x,y,Teams.BLACK).markAsKillablePossible()
+            cell = getFarDiagonalRight(x,y,Teams.BLACK)
+            cell.markAsKillablePossible()
+            modifiedCells.add(cell)
+            possibilities += 1
         }
+        return possibilities
     }
 
 
@@ -222,12 +274,40 @@ class Board {
 
     fun canKill(x: Int, y: Int, piece: Piece) : Boolean{
         if(piece.isDame()) {
-
             return isDiagonalLeftKillable(x, y, piece, Teams.WHITE) || isDiagonalLeftKillable(x, y, piece, Teams.BLACK) ||
                     isDiagonalRightKillable(x, y, piece, Teams.WHITE) || isDiagonalRightKillable(x, y, piece, Teams.BLACK)
-        } else {
-            return isDiagonalRightKillable(x, y, piece) || isDiagonalLeftKillable(x, y, piece)
         }
+        return isDiagonalRightKillable(x, y, piece) || isDiagonalLeftKillable(x, y, piece)
+
+    }
+
+    fun movePiece(xOr: Int, yOr: Int,  xDest: Int, yDest: Int): Boolean {
+        val origin = getCell(xOr, yOr)
+        val dest = getCell(xDest, yDest)
+        val killed = dest.isKillMovement()
+        if (killed) {
+            killMovement(origin, dest)
+        }
+        val piece = origin.removePiece()
+        dest.placePiece(piece!!)
+        checkPromotion(piece)
+        return killed
+    }
+
+    private fun killMovement(origin: Cell, dest: Cell) {
+        val piece = getMiddleCell(origin, dest).removePiece()
+        if (piece!!.team == Teams.BLACK) blackPieces.remove(piece)
+        if (piece.team == Teams.WHITE) whitePieces.remove(piece)
+    }
+
+    private fun getMiddleCell(origin: Cell, dest: Cell): Cell{
+        val x = (dest.position.x - origin.position.x)/2 + origin.position.x
+        val y = (dest.position.y - origin.position.y)/2 + origin.position.y
+        return getCell(x,y)
+    }
+    private fun checkPromotion(piece: Piece) {
+        if(piece.team == Teams.WHITE && piece.position.y == 1 ||
+            piece.team == Teams.BLACK && piece.position.y == 8) piece.convertToDame()
     }
 
     override fun equals(other: Any?): Boolean {
@@ -254,5 +334,16 @@ class Board {
             }
         }
         return result
+    }
+
+    fun unMarkPossibleMovements() {
+        for (cell in modifiedCells) {
+            if(cell.piece == null) {
+                cell.setEmpty()
+            } else {
+                cell.setFilled()
+            }
+        }
+        modifiedCells = mutableListOf()
     }
 }
