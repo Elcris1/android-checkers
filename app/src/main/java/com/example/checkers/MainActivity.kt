@@ -39,13 +39,16 @@ import com.example.checkers.ui.theme.CheckersTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val alias = intent.getStringExtra("alias") ?: "Jugador"
+        val whiteTeam = intent.getBooleanExtra("whiteTeam", true)
+        val timeDeadline = intent.getBooleanExtra("timeDeadline", false)
         enableEdgeToEdge()
         setContent {
             CheckersTheme {
                 Surface (modifier = Modifier.fillMaxSize(),
                     color = Color(0xFF2E3B4E))
                 {
-                    MyApp(game = Game())
+                    MyApp(game = Game(), alias = alias, whiteTeam = whiteTeam, timeDeadline = timeDeadline)
 
                 }
             }
@@ -53,12 +56,15 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+//TODO: STRINGS OF THIS activity
+
 @Composable
-private fun MyApp(modifier: Modifier = Modifier, game: Game) {
+private fun MyApp(modifier: Modifier = Modifier, game: Game, alias: String, whiteTeam: Boolean, timeDeadline: Boolean) {
 
     //TODO: que el jugador pugui elegir amb quines fitxes jugar.
     LaunchedEffect(Unit) {
-        game.firstTurn(Teams.WHITE)
+        val team = if (whiteTeam) Teams.WHITE else Teams.BLACK
+        game.firstTurn(team)
 
     }
     val cells by game.cells.collectAsState()
@@ -91,7 +97,7 @@ private fun MyApp(modifier: Modifier = Modifier, game: Game) {
 
     Column (modifier = modifier.padding(top = 100.dp)) {
 
-        Text("Checkers app")
+        Text("Checkers app: $alias, $timeDeadline")
         for(y in 1..8) {
             Row (modifier.height(50.dp)) {
                 for (x in 1..8){

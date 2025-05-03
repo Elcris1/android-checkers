@@ -82,7 +82,7 @@ private fun App(
         Spacer(modifier = Modifier.height(24.dp))
 
         PersonalizedButton(stringResource(R.string.help_txt), { navigate(context, HelpActivity::class.java) })
-        PersonalizedButton(stringResource(R.string.start_game), { navigate(context, MainActivity::class.java) })
+        PersonalizedButton(stringResource(R.string.start_game), { navigate(context, ConfigurationActivity::class.java) })
         PersonalizedButton(stringResource(R.string.exit), { (context as? Activity)?.finish() })
     }
 }

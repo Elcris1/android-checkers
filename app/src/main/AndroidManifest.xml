@@ -12,6 +12,11 @@
         android:theme="@style/Theme.Checkers"
         tools:targetApi="31">
         <activity
+            android:name=".ConfigurationActivity"
+            android:exported="false"
+            android:label="@string/title_activity_configuration"
+            android:theme="@style/Theme.Checkers" />
+        <activity
             android:name=".HelpActivity"
             android:exported="false"
             android:label="@string/title_activity_help"
