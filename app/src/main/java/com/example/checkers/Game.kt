@@ -117,6 +117,7 @@ class Game: ViewModel() {
             if (board.canKill(piece.position.x, piece.position.y, piece)) {
                 availablePieces = mutableListOf()
                 availablePieces.add(piece)
+                Log.d("Computer turn", "KIll movement in $piece")
                 break
             }
             val movements = board.showPossibleMovement(piece.position.x, piece.position.y, piece.team)

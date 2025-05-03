@@ -43,8 +43,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CheckersTheme {
-                Surface (modifier = Modifier.fillMaxSize().padding(20.dp),
-                    color = MaterialTheme.colorScheme.background)
+                Surface (modifier = Modifier.fillMaxSize(),
+                    color = Color(0xFF2E3B4E))
                 {
                     MyApp(game = Game())
 

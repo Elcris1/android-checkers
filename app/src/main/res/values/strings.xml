@@ -1,3 +1,29 @@
 <resources>
-    <string name="app_name">Checkers</string>
+    <string name="app_name">Damas</string>
+    <string name="title_activity_menu">MenuActivity</string>
+    <string name="help_txt">Ayuda</string>
+    <string name="start_game">Empezar partida</string>
+    <string name="exit">Salir</string>
+    <string name="title_activity_help">HelpActivity</string>
+    <string name="title_rules">Reglas</string>
+    <string name="text_rules">El juego esta basado en las damas y sigue las reglas de las damas americanas</string>
+    <string name="title_objective">Objetivo</string>
+    <string name="text_objective">El objetivo es dejar al rival sin fichas o sin movimientos disponibles</string>
+    <string name="title_movement">Movimiento</string>
+    <string name="text_movement">Los peones solo pueden moverse diagonalmente hacía delante</string>
+    <string name="title_turns">Turnos</string>
+    <string name="text_turns">Las fichas negras hacen el primer movimiento, a partir de allí, los turnos saltan alternativamente entre blancas y negras</string>
+    <string name="title_capture">Capturar</string>
+    <string name="text_capture">Para capturar tiene que haber una pieza rival en la posición del movimiento y tener un espacio libre detras de este.\n
+        Los peones solo pueden capturar hacia delante.\nLa captura es obligatoria.\nSe pueden encadenar capturas siempre que haya posiciones disponibles y se cumplan las reglas.
+    </string>
+    <string name="title_dame">Damas</string>
+    <string name="text_dame">Los peones se convierten en damas una vez llegan a la ultima fila.\n
+        A diferencia de los peones, la dama puede moverse una casilla diagonalmente en todas las direcciones, permitiendo la captura en todas.
+    </string>
+    <string name="how_game_works">¿Cómo funciona el juego?</string>
+    <string name="previous_page">Anterior</string>
+    <string name="next_page">Siguiente</string>
+    <string name="go_back">Volver</string>
+
 </resources>
