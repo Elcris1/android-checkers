@@ -14,7 +14,7 @@ class Cell(var type: CellType, var state: CellState, var position: Position = Po
     }
 
     fun isEmpty() : Boolean {
-        return state == CellState.EMPTY && !isForbidden() && piece == null
+        return state == CellState.EMPTY && !isForbidden()
     }
 
     fun isFilled() : Boolean {

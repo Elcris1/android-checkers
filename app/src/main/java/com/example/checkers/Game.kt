@@ -106,6 +106,7 @@ class Game: ViewModel() {
         if(turn != playerTeam) {
             computerTurn()
         } else {
+            Log.d("ChangeTurn", "user turn")
             calculateKillingMovements()
         }
     }
@@ -114,6 +115,7 @@ class Game: ViewModel() {
         val pieces = if (playerTeam == Teams.WHITE) board.blackPieces else board.whitePieces
         var availablePieces: MutableList<Piece> = mutableListOf()
         for (piece in pieces) {
+            Log.d("Calculating movements", "${board.canKill(piece.position.x, piece.position.y, piece)}, $piece" )
             if (board.canKill(piece.position.x, piece.position.y, piece)) {
                 availablePieces = mutableListOf()
                 availablePieces.add(piece)
@@ -167,7 +169,7 @@ class Game: ViewModel() {
         }
         return true
     }
-    private fun gameEnds(msg: String, winner: String): Boolean {
+    fun gameEnds(msg: String, winner: String): Boolean {
         Log.d("GAME ANNOUNCER", msg)
         viewModelScope.launch {
             _mensaje.emit(winner)

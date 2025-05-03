@@ -36,4 +36,8 @@
     <string name="black_team">Negras</string>
     <string name="time_control">Control del tiempo</string>
     <string name="start">Empezar partida!</string>
+
+    <string name="CPU">CPU</string>
+    <string name="remaining_time">Tiempo restante</string>
+
 </resources>
