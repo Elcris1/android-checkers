@@ -7,7 +7,9 @@ import androidx.compose.ui.util.packInts
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
@@ -34,7 +36,8 @@ class Game: ViewModel() {
     //Ending game
     private val _onGoing = MutableStateFlow(true)
     val onGoing: StateFlow<Boolean> = _onGoing
-    var endingMessage = ""
+    private val _mensaje = MutableSharedFlow<String>()
+    val mensaje: SharedFlow<String> = _mensaje
 
     //Force kill user rule
     var forceKill = false
@@ -88,11 +91,11 @@ class Game: ViewModel() {
 
                 }
             }
-            if(calculateWinner()) return
         }
         forceKill = false
         board.unMarkPossibleMovements()
         updateBoard()
+        if(calculateWinner()) return
         changeTurn()
 
     }
@@ -149,11 +152,25 @@ class Game: ViewModel() {
         if (whiteCount == 0) return gameEnds("WHITE has no pieces", "BLACK WINS!")
         if (blackCount == 0) return gameEnds("BLACK has no pieces", "WHITE WINS!")
         //val pieces = if (playerTeam == Teams.WHITE) board.whitePieces else board.blackPieces
-        return false
+        for(piece in board.whitePieces) {
+            if (board.showPossibleMovement(piece.position.x, piece.position.y, piece.team) > 0) {
+                board.unMarkPossibleMovements()
+                return false
+            }
+        }
+        for(piece in board.blackPieces) {
+            if (board.showPossibleMovement(piece.position.x, piece.position.y, piece.team) > 0) {
+                board.unMarkPossibleMovements()
+                return false
+            }
+        }
+        return true
     }
     private fun gameEnds(msg: String, winner: String): Boolean {
         Log.d("GAME ANNOUNCER", msg)
-        endingMessage = winner
+        viewModelScope.launch {
+            _mensaje.emit(winner)
+        }
         _onGoing.value = false
         return true
     }
