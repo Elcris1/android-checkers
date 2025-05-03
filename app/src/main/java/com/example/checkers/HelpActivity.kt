@@ -77,7 +77,7 @@ fun HelpLayout(modifier: Modifier = Modifier) {
 }
 @Composable
 private fun Horizontal(actualPage: MutableState<Int>, context: Context) {
-    val scrollState = rememberScrollState() // 📌 Estado del scroll
+    val scrollState = rememberScrollState()
 
     Column(
         modifier = Modifier

@@ -59,7 +59,7 @@ fun navigate(context: Context, cls: Class<*>) {
 }
 
 @Composable
-fun App(
+private fun App(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current

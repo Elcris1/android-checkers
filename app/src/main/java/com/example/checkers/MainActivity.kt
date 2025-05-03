@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -55,7 +54,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MyApp(modifier: Modifier = Modifier, game: Game) {
+private fun MyApp(modifier: Modifier = Modifier, game: Game) {
 
     //TODO: que el jugador pugui elegir amb quines fitxes jugar.
     LaunchedEffect(Unit) {
@@ -131,7 +130,6 @@ fun MyApp(modifier: Modifier = Modifier, game: Game) {
                                         .clickable(enabled = (cell.piece != null && cell.piece!!.team == game.turn && !game.forceKill)
                                             || cell.isPossibleMovement()
                                                 || game.forceKill && game.availablePieces.contains(cell.piece) ) {
-                                        //TODO: Check Turn
                                         if (cell.isPossibleMovement()) {
                                             game.movePiece(x, y)
                                         } else {
@@ -182,7 +180,7 @@ fun MyApp(modifier: Modifier = Modifier, game: Game) {
 
 }
 @Composable
-fun ShowDialog(endingMessage: String, onDismiss: () -> Unit) {
+private fun ShowDialog(endingMessage: String, onDismiss: () -> Unit) {
     if (endingMessage.isNotEmpty()) {
         AlertDialog(
             onDismissRequest = { onDismiss() },
@@ -194,31 +192,5 @@ fun ShowDialog(endingMessage: String, onDismiss: () -> Unit) {
                 }
             }
         )
-    }
-}
-
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    CheckersTheme {
-        val positions = MutableList(8) {MutableList(8){""} }
-        for( i in 0..7){
-            for(j in 0..7){
-                if ((i + j) % 2 == 0 && (i <= 2 || i >= 5)) {
-                    val value = if (i <= 2) "Black" else "White"
-                    positions[i][j] = value
-                }
-            }
-        }
-
     }
 }
