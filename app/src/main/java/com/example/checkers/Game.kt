@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.time.temporal.Temporal
 
 class Game: ViewModel() {
     private val board = Board().apply { createStartingBoard() }
@@ -23,6 +24,7 @@ class Game: ViewModel() {
     var whiteCount = 12
 
     var turn: Teams = Teams.BLACK
+    var turnCount = 0
 
     //TODO: player may chose team
     var playerTeam: Teams = Teams.WHITE
@@ -54,6 +56,15 @@ class Game: ViewModel() {
         _cells.value = nuevaMatriz
     }
 
+    fun getNumberUserPieces(): Int {
+        if (playerTeam == Teams.WHITE) return whiteCount
+        return blackCount
+    }
+    fun getNumberCPUPieces(): Int {
+        if (playerTeam == Teams.WHITE) return blackCount
+        return whiteCount
+    }
+
     fun firstTurn(userTeams: Teams) {
         playerTeam = userTeams
         if (userTeams != turn) {
@@ -69,7 +80,7 @@ class Game: ViewModel() {
     }
 
     fun movePiece(x: Int, y: Int){
-
+        turnCount+=1
         if(board.movePiece(selectedCell.x, selectedCell.y, x, y)) {
             //if true is a killer movement
             val  cell = board.getCell(x, y)
@@ -142,7 +153,8 @@ class Game: ViewModel() {
                 val selectedMovement = board.modifiedCells.random()
                 movePiece(selectedMovement.position.x, selectedMovement.position.y)
             } catch (error: NoSuchElementException) {
-                gameEnds("Computer has no movements", "USER WINS!")
+                val winner = if (playerTeam == Teams.WHITE) "WHITE WINS!" else "BLACK WINS!"
+                gameEnds("Computer has no movements", winner)
             }
 
         }

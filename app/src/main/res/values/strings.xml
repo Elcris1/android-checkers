@@ -35,9 +35,18 @@
     <string name="white_team">Blancas</string>
     <string name="black_team">Negras</string>
     <string name="time_control">Control del tiempo</string>
+    <string name="minutes">Minutos</string>
+    <string name="seconds">Segundos</string>
     <string name="start">Empezar partida!</string>
 
     <string name="CPU">CPU</string>
     <string name="remaining_time">Tiempo restante</string>
+    <string name="white_wins">Las blancas ganan!</string>
+    <string name="black_wins">Las negras ganan!</string>
+    <string name="user_wins">%s ha vencido a la CPU en %d movimientos, terminando con %d piezas.</string>
+    <string name="cpu_wins">La CPU ha vencido a %s en %d movimientos, ganando con %d piezas.</string>
+    <string name="time_winning">Además le ha sobrado %s minutos!</string>
+    <string name="accept">Aceptar</string>
+    <string name="win_by_time">La CPU ha ganado porque %s se ha quedado sin tiempo</string>
 
 </resources>

@@ -1,6 +1,7 @@
 package com.example.checkers
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -11,14 +12,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -28,8 +32,10 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,6 +51,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.example.checkers.ui.theme.CheckersTheme
 import kotlinx.coroutines.delay
 
@@ -54,13 +61,25 @@ class MainActivity : ComponentActivity() {
         val alias = intent.getStringExtra("alias") ?: "Jugador"
         val whiteTeam = intent.getBooleanExtra("whiteTeam", true)
         val timeDeadline = intent.getBooleanExtra("timeDeadline", false)
+        val minuteLimit = intent.getIntExtra("minuteLimit", 0)
+        val secondLimit = intent.getIntExtra("secondLimit", 0)
+
+
+
         enableEdgeToEdge()
         setContent {
             CheckersTheme {
                 Surface (modifier = Modifier.fillMaxSize(),
                     color = Color(0xFF2E3B4E))
                 {
-                    MyApp(game = Game(), alias = alias, whiteTeam = whiteTeam, timeDeadline = timeDeadline)
+                    MyApp(
+                        game = Game(),
+                        alias = alias,
+                        whiteTeam = whiteTeam,
+                        timeDeadline = timeDeadline,
+                        minuteLimit = minuteLimit,
+                        secondLimit = secondLimit
+                    )
 
                 }
             }
@@ -68,13 +87,20 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-//TODO: STRINGS OF THIS activity
 
 @Composable
-private fun MyApp(modifier: Modifier = Modifier, game: Game, alias: String, whiteTeam: Boolean, timeDeadline: Boolean) {
-
+private fun MyApp(
+    modifier: Modifier = Modifier,
+    game: Game,
+    alias: String,
+    whiteTeam: Boolean,
+    timeDeadline: Boolean,
+    minuteLimit: Int,
+    secondLimit: Int
+) {
+    //TODO: horizontal screen
+    val team = if (whiteTeam) Teams.WHITE else Teams.BLACK
     LaunchedEffect(Unit) {
-        val team = if (whiteTeam) Teams.WHITE else Teams.BLACK
         game.firstTurn(team)
     }
 
@@ -82,6 +108,9 @@ private fun MyApp(modifier: Modifier = Modifier, game: Game, alias: String, whit
     val loading = game.loading.collectAsState()
     val endingMessage by game.mensaje.collectAsState(initial = "")
     var showDialog by remember { mutableStateOf(false) }
+    val remainingTime = rememberSaveable { mutableIntStateOf((minuteLimit * 60 + secondLimit)) }
+    val stopTimer = rememberSaveable{ mutableStateOf(false) }
+
 
     LoadingIndicator(loading)
 
@@ -92,12 +121,12 @@ private fun MyApp(modifier: Modifier = Modifier, game: Game, alias: String, whit
     }
 
     if (showDialog) {
-        ShowDialog(endingMessage) { showDialog = false }
+        ShowDialog(endingMessage, team, alias,  timeDeadline, remainingTime, stopTimer, game) { showDialog = false }
     }
 
     Column (modifier = modifier.padding(top = 100.dp, start = 8.dp, end = 8.dp)) {
 
-        if(timeDeadline) Timer(1, 30, onTimeFinish = { onTimeEnd(game) })
+        if(timeDeadline) Timer(remainingTime, stopTimer, onTimeFinish = { onTimeEnd(game) }, modifier)
 
         GameHeader(whiteTeam, alias)
 
@@ -126,18 +155,73 @@ private fun MyApp(modifier: Modifier = Modifier, game: Game, alias: String, whit
 
 }
 @Composable
-private fun ShowDialog(endingMessage: String, onDismiss: () -> Unit) {
+private fun ShowDialog(
+    endingMessage: String,
+    userTeam: Teams,
+    alias: String,
+    timeDeadline: Boolean,
+    remainingTime: MutableState<Int>,
+    shouldStop: MutableState<Boolean>,
+    game: Game,
+    onDismiss: () -> Unit
+) {
     if (endingMessage.isNotEmpty()) {
-        AlertDialog(
-            onDismissRequest = { onDismiss() },
-            title = { Text("Mensaje final") },
-            text = { Text(endingMessage) },
-            confirmButton = {
-                Button(onClick = { onDismiss() }) {
-                    Text("Aceptar")
+        val title: String
+        var message: String
+        if (endingMessage != "CPU") {
+            title = if (endingMessage == "WHITE WINS!") stringResource(R.string.white_wins) else stringResource(R.string.black_wins)
+            message = if (userTeam == Teams.WHITE && endingMessage == "WHITE WINS!" || userTeam == Teams.BLACK && endingMessage == "BLACK WINS!") {
+                stringResource(R.string.user_wins, alias, game.turnCount, game.getNumberUserPieces())
+            } else {
+                stringResource(R.string.cpu_wins, alias, game.turnCount, game.getNumberCPUPieces())
+            }
+            shouldStop.value = true
+            if (timeDeadline) {
+                message += "\n" + stringResource(R.string.time_winning, "${remainingTime.value/60}:${remainingTime.value%60}")
+            }
+        } else {
+            title = if (userTeam == Teams.WHITE) stringResource(R.string.black_wins) else stringResource(R.string.white_wins)
+            message = stringResource(R.string.win_by_time, alias)
+        }
+
+        Dialog(onDismissRequest = { onDismiss() }) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color(0xFF1E3A8A), shape = RoundedCornerShape(16.dp)) // 📌 Fondo oscuro y bordes redondeados
+                    .padding(16.dp)
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = title,
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = message,
+                        fontSize = 18.sp,
+                        textAlign = TextAlign.Center,
+                        color = Color.White
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Button(
+                        onClick = { onDismiss() },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD0A43C)) // 📌 Botón dorado elegante
+                    ) {
+                        Text(stringResource(R.string.accept), fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+                    }
                 }
             }
-        )
+        }
     }
 }
 
@@ -155,25 +239,27 @@ private fun LoadingIndicator(loading: State<Boolean>) {
 }
 
 @Composable
-fun Timer(minuteLimit: Int, secondLimit: Int, onTimeFinish: () -> Unit) {
-    var remainingTime by remember { mutableStateOf((minuteLimit * 60 + secondLimit)) }
+fun Timer(remainingTime: MutableState<Int>, shouldStop: MutableState<Boolean>, onTimeFinish: () -> Unit, modifier: Modifier = Modifier) {
 
     LaunchedEffect(remainingTime) {
-        while (remainingTime > 0) {
+        while (remainingTime.value > 0 && !shouldStop.value) {
             delay(1000L)
-            remainingTime--
+            remainingTime.value--
         }
-        onTimeFinish()
+        if(!shouldStop.value) onTimeFinish()
     }
 
-    val time = "${remainingTime / 60}:${if (remainingTime % 60 < 10) "0${remainingTime % 60}" else "${remainingTime % 60}"}"
+    val time = "${remainingTime.value/ 60}:${if (remainingTime.value % 60 < 10) "0${remainingTime.value % 60}" else "${remainingTime.value % 60}"}"
     val text = stringResource(R.string.remaining_time) + ": " + time
 
     Text(
         text = text,
         fontSize = 20.sp,
         fontWeight = FontWeight.Bold,
-        textAlign = TextAlign.End
+        textAlign = TextAlign.End,
+        modifier = modifier
+            .fillMaxWidth()
+            .wrapContentWidth(Alignment.End)
     )
 
 }
