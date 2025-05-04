@@ -46,6 +46,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.BiasAbsoluteAlignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
@@ -117,7 +118,7 @@ private fun MyApp(
     }
 
     val context = LocalContext.current
-    val loading = game.loading
+
     val endingMessage = game.mensaje
     var showDialog by remember { mutableStateOf(false) }
     val remainingTime = rememberSaveable { mutableIntStateOf((minuteLimit * 60 + secondLimit)) }
@@ -126,7 +127,11 @@ private fun MyApp(
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
-    LoadingIndicator(loading)
+
+    if(!isLandscape){
+        val loading = game.loading
+        LoadingIndicator(loading, modifier = Modifier.padding(top = 16.dp))
+    }
 
     Column(modifier=  modifier.fillMaxSize()) {
 
@@ -215,6 +220,7 @@ private  fun HorizontalBoard(
     game: Game,
     modifier: Modifier = Modifier,
 ) {
+    val loading = game.loading
     Row (
         modifier = Modifier.fillMaxSize()
     ) {
@@ -255,6 +261,7 @@ private  fun HorizontalBoard(
             GameHeader(whiteTeam, alias)
             Footer(game)
             TurnCounter(game)
+            LoadingIndicator(loading)
         }
     }
 
@@ -348,12 +355,12 @@ private fun ShowDialog(
 }
 
 @Composable
-private fun LoadingIndicator(loading: State<Boolean>) {
+private fun LoadingIndicator(loading: State<Boolean>, modifier: Modifier = Modifier) {
 
     Column (horizontalAlignment = Alignment.CenterHorizontally) {
         if (loading.value) {
             CircularProgressIndicator(
-                modifier = Modifier.size(50.dp)
+                modifier = modifier.size(50.dp)
             )
 
         }
