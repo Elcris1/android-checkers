@@ -257,7 +257,6 @@ private fun Results(
     finalization: MutableState<String>
 ) {
 
-    //TODO: make this less verboese?
 
     ResultItem(stringResource(R.string.alias), alias)
     ResultItem(stringResource(R.string.result), result)

@@ -1,16 +1,11 @@
 package com.example.checkers
 
-import android.inputmethodservice.Keyboard.Row
 import android.util.Log
 import java.nio.channels.NotYetBoundException
 
 class Board {
     lateinit var cells: Array<Array<Cell>>
-    // var that enables to know if user is in the middle of movement.
-    var is_piece_selected: Boolean = false
-    //TODO: list of marked as possible option, cells of which state is not changed should become original state
     var modifiedCells: MutableList<Cell> = mutableListOf()
-    //TODO: list of alive pieces -> check existence of killability, calculate al possible movements to select one at random.
     var blackPieces: MutableList<Piece> = mutableListOf()
     var whitePieces: MutableList<Piece> = mutableListOf()
     fun createStartingBoard() {
@@ -96,7 +91,6 @@ class Board {
     }
 
     fun showPossibleMovement(x: Int, y: Int, teams: Teams = Teams.WHITE) : Int{
-        //TODO: Finish test
         val piece = cells[y][x].piece!!
         //if is dame => dame movements
         if(piece.isDame()){
@@ -168,7 +162,6 @@ class Board {
     }
 
     fun showKillableMoves(x: Int, y: Int, piece: Piece): Int {
-        //TODO: test
         var cell: Cell
         var possibilities = 0
         if(isDiagonalLeftKillable(x, y, piece)) {
@@ -187,7 +180,6 @@ class Board {
         return possibilities
     }
     fun showKillableDameMoves(x: Int, y: Int, piece: Piece): Int {
-        //TODO: test
         var cell: Cell
         var possibilities = 0;
         if(isDiagonalLeftKillable(x, y, piece, Teams.WHITE)) {

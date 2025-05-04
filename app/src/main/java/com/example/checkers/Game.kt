@@ -22,7 +22,6 @@ class Game: ViewModel() {
         Log.d("GameViewModel", "ViewModel inicializado")
     }
 
-    //TODO: el pc no mata simepre que deberia
     private val board = Board().apply { createStartingBoard() }
     val cells: MutableState<Array<Array<Cell>>> = mutableStateOf(board.cells)
 
