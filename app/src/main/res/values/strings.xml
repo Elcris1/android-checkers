@@ -68,5 +68,8 @@
     <string name="new_game">Nueva partida</string>
     <string name="game_results">Resultados de la partida</string>
     <string name="email_placeholder">Introduce tu correo</string>
+    <string name="email_body">Cuerpo del email</string>
+    <string name="sending_meail">Enviando correo con</string>
+    <string name="email_not_found">No se encontró la aplicación de correo</string>
 
 </resources>
