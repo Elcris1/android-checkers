@@ -1,10 +1,13 @@
 package com.example.checkers
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.collection.objectFloatMapOf
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -58,7 +61,7 @@ import kotlinx.coroutines.delay
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val alias = intent.getStringExtra("alias") ?: "Jugador"
+        val alias = intent.getStringExtra("alias") ?: "Player"
         val whiteTeam = intent.getBooleanExtra("whiteTeam", true)
         val timeDeadline = intent.getBooleanExtra("timeDeadline", false)
         val minuteLimit = intent.getIntExtra("minuteLimit", 0)
@@ -104,6 +107,7 @@ private fun MyApp(
         game.firstTurn(team)
     }
 
+    val context = LocalContext.current
     val cells by game.cells.collectAsState()
     val loading = game.loading.collectAsState()
     val endingMessage by game.mensaje.collectAsState(initial = "")
@@ -121,7 +125,7 @@ private fun MyApp(
     }
 
     if (showDialog) {
-        ShowDialog(endingMessage, team, alias,  timeDeadline, remainingTime, stopTimer, game) { showDialog = false }
+        ShowDialog(endingMessage, team, alias,  timeDeadline, remainingTime, stopTimer, game, context)
     }
 
     Column (modifier = modifier.padding(top = 100.dp, start = 8.dp, end = 8.dp)) {
@@ -163,13 +167,20 @@ private fun ShowDialog(
     remainingTime: MutableState<Int>,
     shouldStop: MutableState<Boolean>,
     game: Game,
-    onDismiss: () -> Unit
+    context: Context
 ) {
     if (endingMessage.isNotEmpty()) {
+        val intent = Intent(context, ResultActivity::class.java)
         val title: String
         var message: String
         if (endingMessage != "CPU") {
-            title = if (endingMessage == "WHITE WINS!") stringResource(R.string.white_wins) else stringResource(R.string.black_wins)
+            if (endingMessage == "WHITE WINS!") {
+                title = stringResource(R.string.white_wins)
+                intent.putExtra("result", Teams.WHITE.toString())
+            } else {
+                title = stringResource(R.string.black_wins)
+                intent.putExtra("result", Teams.BLACK.toString())
+            }
             message = if (userTeam == Teams.WHITE && endingMessage == "WHITE WINS!" || userTeam == Teams.BLACK && endingMessage == "BLACK WINS!") {
                 stringResource(R.string.user_wins, alias, game.turnCount, game.getNumberUserPieces())
             } else {
@@ -177,18 +188,27 @@ private fun ShowDialog(
             }
             shouldStop.value = true
             if (timeDeadline) {
-                message += "\n" + stringResource(R.string.time_winning, "${remainingTime.value/60}:${remainingTime.value%60}")
+                intent.putExtra("time", calcRemainingTime(remainingTime))
+                message += "\n" + stringResource(R.string.time_winning, calcRemainingTime(remainingTime))
             }
         } else {
             title = if (userTeam == Teams.WHITE) stringResource(R.string.black_wins) else stringResource(R.string.white_wins)
             message = stringResource(R.string.win_by_time, alias)
+            intent.putExtra("time", calcRemainingTime(remainingTime))
+            intent.putExtra("result", if(userTeam==Teams.WHITE) Teams.BLACK.toString() else Teams.WHITE.toString())
         }
+        Log.d("Enviando datos", calcRemainingTime(remainingTime))
+        intent.putExtra("alias", alias)
+        intent.putExtra("userTeam", userTeam.toString())
+        intent.putExtra("numberPiecesUser", game.getNumberUserPieces())
+        intent.putExtra("numberPiecesCPU", game.getNumberCPUPieces())
+        intent.putExtra("movements", game.turnCount)
 
-        Dialog(onDismissRequest = { onDismiss() }) {
+        Dialog(onDismissRequest = { context.startActivity(intent) }) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xFF1E3A8A), shape = RoundedCornerShape(16.dp)) // 📌 Fondo oscuro y bordes redondeados
+                    .background(Color(0xFF1E3A8A), shape = RoundedCornerShape(16.dp))
                     .padding(16.dp)
             ) {
                 Column(
@@ -214,8 +234,8 @@ private fun ShowDialog(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Button(
-                        onClick = { onDismiss() },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD0A43C)) // 📌 Botón dorado elegante
+                        onClick = { context.startActivity(intent) },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD0A43C))
                     ) {
                         Text(stringResource(R.string.accept), fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.Black)
                     }
@@ -238,6 +258,10 @@ private fun LoadingIndicator(loading: State<Boolean>) {
     }
 }
 
+private fun calcRemainingTime(remainingTime: MutableState<Int>) : String {
+    return "${remainingTime.value/ 60}:${if (remainingTime.value % 60 < 10) "0${remainingTime.value % 60}" else "${remainingTime.value % 60}"}"
+}
+
 @Composable
 fun Timer(remainingTime: MutableState<Int>, shouldStop: MutableState<Boolean>, onTimeFinish: () -> Unit, modifier: Modifier = Modifier) {
 
@@ -249,7 +273,7 @@ fun Timer(remainingTime: MutableState<Int>, shouldStop: MutableState<Boolean>, o
         if(!shouldStop.value) onTimeFinish()
     }
 
-    val time = "${remainingTime.value/ 60}:${if (remainingTime.value % 60 < 10) "0${remainingTime.value % 60}" else "${remainingTime.value % 60}"}"
+    val time = calcRemainingTime(remainingTime)
     val text = stringResource(R.string.remaining_time) + ": " + time
 
     Text(

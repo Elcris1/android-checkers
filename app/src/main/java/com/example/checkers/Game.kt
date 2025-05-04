@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import java.time.temporal.Temporal
 
 class Game: ViewModel() {
+    //TODO: el pc no mata simepre que deberia
     private val board = Board().apply { createStartingBoard() }
     private val _cells = MutableStateFlow(board.getBoard())
     val cells: StateFlow<Array<Array<Cell>>> = _cells

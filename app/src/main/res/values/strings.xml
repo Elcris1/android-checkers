@@ -49,4 +49,24 @@
     <string name="accept">Aceptar</string>
     <string name="win_by_time">La CPU ha ganado porque %s se ha quedado sin tiempo</string>
 
+    <string name="title_activity_result">ResultActivity</string>
+    <string name="result_msg">Partida finalizada el %s.\n
+        Siendo el usuario con el alias %s jugando las fichas %s.\n
+        Han ganado las fichas %s en %d movimientos.\n
+        Han sobrevivido %d piezas del usuario y %d del CPU.\n</string>
+    <string name="time_involved">Había un límite de tiempo del cual han sobrado %s minutos.</string>
+    <string name="no_time">No se ha jugado con un tiempo limite</string>
+    <string name="alias">Alias</string> //AKA en ingles
+    <string name="result">Resultado</string>
+    <string name="user_team">Equipo usuario</string>
+    <string name="user_pieces">Fichas usuario</string>
+    <string name="cpu_pieces">Fichas CPU</string>
+    <string name="movements">Movimientos</string>
+    <string name="time">Tiempo</string>
+    <string name="time_finalization">Fecha finalización</string>
+    <string name="send">Enviar correo</string>
+    <string name="new_game">Nueva partida</string>
+    <string name="game_results">Resultados de la partida</string>
+    <string name="email_placeholder">Introduce tu correo</string>
+
 </resources>
