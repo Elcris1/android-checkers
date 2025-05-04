@@ -125,25 +125,26 @@ class Game: ViewModel() {
     }
 
     private fun computerTurn(){
-        val pieces = if (playerTeam == Teams.WHITE) board.blackPieces else board.whitePieces
-        var availablePieces: MutableList<Piece> = mutableListOf()
-        for (piece in pieces) {
-            Log.d("Calculating movements", "${board.canKill(piece.position.x, piece.position.y, piece)}, $piece" )
-            if (board.canKill(piece.position.x, piece.position.y, piece)) {
-                availablePieces = mutableListOf()
-                availablePieces.add(piece)
-                break
-            }
-            val movements = board.showPossibleMovement(piece.position.x, piece.position.y, piece.team)
-            if (movements > 0) {
-                availablePieces.add(piece)
-            }
-        }
-        board.unMarkPossibleMovements()
+
 
 
         viewModelScope.launch {
             try {
+                val pieces = if (playerTeam == Teams.WHITE) board.blackPieces else board.whitePieces
+                var availablePieces: MutableList<Piece> = mutableListOf()
+                for (piece in pieces) {
+                    Log.d("Calculating movements", "${board.canKill(piece.position.x, piece.position.y, piece)}, $piece" )
+                    if (board.canKill(piece.position.x, piece.position.y, piece)) {
+                        availablePieces = mutableListOf()
+                        availablePieces.add(piece)
+                        break
+                    }
+                    val movements = board.showPossibleMovement(piece.position.x, piece.position.y, piece.team)
+                    if (movements > 0) {
+                        availablePieces.add(piece)
+                    }
+                }
+                board.unMarkPossibleMovements()
                 loading.value = true
                 delay(1000)
                 loading.value = false

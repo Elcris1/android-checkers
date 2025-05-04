@@ -22,8 +22,10 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
@@ -60,6 +62,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
+import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.ViewModel
@@ -472,6 +476,8 @@ private fun Footer(game: Game) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .heightIn(min = 50.dp, max = 90.dp)
+            .wrapContentHeight()
             .background(Color(0xFF1F2937))
             .shadow(6.dp, shape = RoundedCornerShape(12.dp))
             .padding(10.dp),
@@ -481,6 +487,7 @@ private fun Footer(game: Game) {
             modifier = Modifier
                 .weight(1f)
                 .background(Color(0xFFD0A43C))
+                .fillMaxHeight()
                 .padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -491,6 +498,7 @@ private fun Footer(game: Game) {
             modifier = Modifier
                 .weight(1f)
                 .background(Color(0xFFD0A43C))
+                .fillMaxHeight()
                 .padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
