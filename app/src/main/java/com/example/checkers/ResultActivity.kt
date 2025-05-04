@@ -85,7 +85,6 @@ private fun MyApp(
     time: String,
     finalizationDate: String
 ) {
-    //TODO: make horizontal
     val email = rememberSaveable { mutableStateOf("ecp16@alumnes.udl.cat") }
     var body = stringResource(R.string.result_msg, finalizationDate, alias, userTeam, result, movements, userPieces, cpuPieces)
     if (time != "") {

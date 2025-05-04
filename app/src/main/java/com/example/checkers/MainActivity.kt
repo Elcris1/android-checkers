@@ -2,11 +2,13 @@ package com.example.checkers
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.collection.objectFloatMapOf
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -16,6 +18,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -41,9 +44,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.BiasAbsoluteAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -55,6 +61,8 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.example.checkers.ui.theme.CheckersTheme
 import kotlinx.coroutines.delay
 
@@ -66,22 +74,22 @@ class MainActivity : ComponentActivity() {
         val timeDeadline = intent.getBooleanExtra("timeDeadline", false)
         val minuteLimit = intent.getIntExtra("minuteLimit", 0)
         val secondLimit = intent.getIntExtra("secondLimit", 0)
-
-
+        val game: Game by viewModels()
 
         enableEdgeToEdge()
         setContent {
+
             CheckersTheme {
                 Surface (modifier = Modifier.fillMaxSize(),
                     color = Color(0xFF2E3B4E))
                 {
                     MyApp(
-                        game = Game(),
                         alias = alias,
                         whiteTeam = whiteTeam,
                         timeDeadline = timeDeadline,
                         minuteLimit = minuteLimit,
-                        secondLimit = secondLimit
+                        secondLimit = secondLimit,
+                        game = game
                     )
 
                 }
@@ -94,40 +102,78 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun MyApp(
     modifier: Modifier = Modifier,
-    game: Game,
     alias: String,
     whiteTeam: Boolean,
     timeDeadline: Boolean,
     minuteLimit: Int,
-    secondLimit: Int
+    secondLimit: Int,
+    game: Game
 ) {
-    //TODO: horizontal screen
     val team = if (whiteTeam) Teams.WHITE else Teams.BLACK
+
+
     LaunchedEffect(Unit) {
         game.firstTurn(team)
     }
 
     val context = LocalContext.current
-    val cells by game.cells.collectAsState()
-    val loading = game.loading.collectAsState()
-    val endingMessage by game.mensaje.collectAsState(initial = "")
+    val loading = game.loading
+    val endingMessage = game.mensaje
     var showDialog by remember { mutableStateOf(false) }
     val remainingTime = rememberSaveable { mutableIntStateOf((minuteLimit * 60 + secondLimit)) }
     val stopTimer = rememberSaveable{ mutableStateOf(false) }
 
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     LoadingIndicator(loading)
 
-    LaunchedEffect(endingMessage) {
-        if (endingMessage.isNotEmpty()) {
-            showDialog = true
+    Column(modifier=  modifier.fillMaxSize()) {
+
+        LaunchedEffect(endingMessage.value) {
+            if (endingMessage.value.isNotBlank()) {
+                showDialog = true
+            }
         }
+
+        if (showDialog) {
+            ShowDialog(endingMessage.value, team, alias,  timeDeadline, remainingTime, stopTimer, game, context)
+        }
+
+        BoardScreen(isLandscape, timeDeadline, remainingTime, stopTimer, whiteTeam, alias, game)
     }
 
-    if (showDialog) {
-        ShowDialog(endingMessage, team, alias,  timeDeadline, remainingTime, stopTimer, game, context)
+}
+@Composable
+private fun BoardScreen(
+    isLandscape: Boolean,
+    timeDeadline: Boolean,
+    remainingTime: MutableState<Int>,
+    stopTimer: MutableState<Boolean>,
+    whiteTeam: Boolean,
+    alias: String,
+    game: Game,
+    modifier: Modifier = Modifier,
+) {
+    val cells = game.cells
+    if (isLandscape) {
+        HorizontalBoard(timeDeadline, remainingTime, stopTimer, whiteTeam, alias, cells, game)
+    } else {
+        VerticalBoard(timeDeadline, remainingTime, stopTimer, whiteTeam, alias, cells, game)
     }
-
+}
+@Composable
+private fun VerticalBoard(
+    timeDeadline: Boolean,
+    remainingTime: MutableState<Int>,
+    stopTimer: MutableState<Boolean>,
+    whiteTeam: Boolean,
+    alias: String,
+    cells: MutableState<Array<Array<Cell>>>,
+    game: Game,
+    modifier: Modifier = Modifier,
+)
+{
     Column (modifier = modifier.padding(top = 100.dp, start = 8.dp, end = 8.dp)) {
 
         if(timeDeadline) Timer(remainingTime, stopTimer, onTimeFinish = { onTimeEnd(game) }, modifier)
@@ -137,7 +183,7 @@ private fun MyApp(
         for(y in 1..8) {
             Row (modifier.height(50.dp)) {
                 for (x in 1..8){
-                    val cell = cells[y][x]
+                    val cell = cells.value[y][x]
                     Box(
                         modifier = Modifier
                             .weight(1f)
@@ -154,10 +200,66 @@ private fun MyApp(
             }
         }
         Footer(game)
+        TurnCounter(game)
 
+    }
+}
+@Composable
+private  fun HorizontalBoard(
+    timeDeadline: Boolean,
+    remainingTime: MutableState<Int>,
+    stopTimer: MutableState<Boolean>,
+    whiteTeam: Boolean,
+    alias: String,
+    cells: MutableState<Array<Array<Cell>>>,
+    game: Game,
+    modifier: Modifier = Modifier,
+) {
+    Row (
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Column (
+            modifier = modifier
+                .weight(2f)
+                .padding(top = 20.dp, end = 8.dp, bottom = 16.dp))
+        {
+            for(y in 1..8) {
+                Row (modifier.weight(1f)) {
+                    for (x in 1..8){
+                        val cell = cells.value[y][x]
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight()
+                                .background(
+                                    if (cell.type == CellType.BROWN) Color(0xFF734222)
+                                    else Color(0xFFD0A43C)
+                                )
+                        )
+                        {
+                            Piece(cell, game, x, y)
+                        }
+                    }
+                }
+            }
+        }
+
+        Column(
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .weight(1f),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceEvenly
+        ) {
+            if(timeDeadline) Timer(remainingTime, stopTimer, onTimeFinish = { onTimeEnd(game) }, modifier.padding(end = 8.dp))
+            GameHeader(whiteTeam, alias)
+            Footer(game)
+            TurnCounter(game)
+        }
     }
 
 }
+
 @Composable
 private fun ShowDialog(
     endingMessage: String,
@@ -388,6 +490,21 @@ private fun Footer(game: Game) {
             WhiteText(stringResource(R.string.white_team) + ": ${game.whiteCount}", 18.sp, Color.Black)
         }
     }
+}
+
+@Composable
+private fun TurnCounter(game: Game, modifier: Modifier = Modifier) {
+    val text = stringResource(R.string.turn_count, game.turnCount)
+    Text(
+        text = text,
+        fontSize = 16.sp,
+        fontWeight = FontWeight.Bold,
+        color = Color.White,
+        textAlign = TextAlign.End,
+        modifier = modifier
+            .fillMaxWidth()
+            .wrapContentWidth(Alignment.Start)
+    )
 }
 
 

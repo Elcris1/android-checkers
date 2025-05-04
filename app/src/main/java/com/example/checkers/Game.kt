@@ -3,7 +3,9 @@ package com.example.checkers
 import android.util.Log
 import android.view.View
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.util.packInts
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
@@ -15,46 +17,45 @@ import kotlinx.coroutines.launch
 import java.time.temporal.Temporal
 
 class Game: ViewModel() {
+
+    init {
+        Log.d("GameViewModel", "ViewModel inicializado")
+    }
+
     //TODO: el pc no mata simepre que deberia
     private val board = Board().apply { createStartingBoard() }
-    private val _cells = MutableStateFlow(board.getBoard())
-    val cells: StateFlow<Array<Array<Cell>>> = _cells
+    val cells: MutableState<Array<Array<Cell>>> = mutableStateOf(board.cells)
 
     // number of pieces alive
     var blackCount = 12
     var whiteCount = 12
 
+    //turns
     var turn: Teams = Teams.BLACK
     var turnCount = 0
-
-    //TODO: player may chose team
     var playerTeam: Teams = Teams.WHITE
-
     lateinit var selectedCell: Position
 
 
     //CPU delay interaction
-    private val _loading = MutableStateFlow(false)
-    val loading: StateFlow<Boolean> = _loading
+    val loading: MutableState<Boolean> = mutableStateOf(false)
     //Ending game
-    private val _onGoing = MutableStateFlow(true)
-    val onGoing: StateFlow<Boolean> = _onGoing
-    private val _mensaje = MutableSharedFlow<String>()
-    val mensaje: SharedFlow<String> = _mensaje
+    val mensaje: MutableState<String> = mutableStateOf("")
 
     //Force kill user rule
     var forceKill = false
     var availablePieces: MutableList<Piece> = mutableListOf()
 
 
+
     private fun updateBoard() {
-        val nuevaMatriz = Array(10) { Array(10) { Cell.fromCode('X') } } // Nueva matriz vacía
+        val nuevaMatriz = Array(10) { Array(10) { Cell.fromCode('X') } }
         nuevaMatriz.forEachIndexed { y, fila ->
             fila.forEachIndexed { x, _ ->
-                nuevaMatriz[y][x] = board.getCell(x, y) // Copiar datos
+                nuevaMatriz[y][x] = board.getCell(x, y)
             }
         }
-        _cells.value = nuevaMatriz
+        cells.value = nuevaMatriz
     }
 
     fun getNumberUserPieces(): Int {
@@ -131,13 +132,11 @@ class Game: ViewModel() {
             if (board.canKill(piece.position.x, piece.position.y, piece)) {
                 availablePieces = mutableListOf()
                 availablePieces.add(piece)
-                Log.d("Computer turn", "KIll movement in $piece")
                 break
             }
             val movements = board.showPossibleMovement(piece.position.x, piece.position.y, piece.team)
             if (movements > 0) {
                 availablePieces.add(piece)
-                Log.d("Adding possible pieces", "$piece")
             }
         }
         board.unMarkPossibleMovements()
@@ -145,9 +144,9 @@ class Game: ViewModel() {
 
         viewModelScope.launch {
             try {
-                _loading.value = true
+                loading.value = true
                 delay(1000)
-                _loading.value = false
+                loading.value = false
                 val selectedPiece = availablePieces.random()
                 selectedCell = selectedPiece.position
                 board.showPossibleMovement(selectedPiece.position.x, selectedPiece.position.y, selectedPiece.team)
@@ -185,9 +184,8 @@ class Game: ViewModel() {
     fun gameEnds(msg: String, winner: String): Boolean {
         Log.d("GAME ANNOUNCER", msg)
         viewModelScope.launch {
-            _mensaje.emit(winner)
+            mensaje.value = winner
         }
-        _onGoing.value = false
         return true
     }
     private fun calculateKillingMovements(){

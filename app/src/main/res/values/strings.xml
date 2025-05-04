@@ -48,6 +48,7 @@
     <string name="time_winning">Además le ha sobrado %s minutos!</string>
     <string name="accept">Aceptar</string>
     <string name="win_by_time">La CPU ha ganado porque %s se ha quedado sin tiempo</string>
+    <string name="turn_count">Turno: %d</string>
 
     <string name="title_activity_result">ResultActivity</string>
     <string name="result_msg">Partida finalizada el %s.\n

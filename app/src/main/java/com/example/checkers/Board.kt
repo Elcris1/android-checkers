@@ -227,8 +227,8 @@ class Board {
         if ((team == Teams.WHITE && y<=2) || (team == Teams.BLACK && y>=7) || (x<=2) ) return false
         val diagonalLeft = getDiagonalLeft(x, y, team)
         val farLeft = getFarDiagonalLeft(x,y, team)
-        if (diagonalLeft.piece != null) Log.d("pOislbe error", "${diagonalLeft.piece!!.team != piece.team}")
-        Log.d("Posible error","${diagonalLeft.isFilled()}, ${farLeft.isEmpty()}")
+        if (diagonalLeft.piece != null) Log.d("DiagonalLeft comparing pieces team", "${diagonalLeft.piece!!.team != piece.team}")
+        Log.d("Diagonal left diagonalfilled-farempty","${diagonalLeft.isFilled()}, ${farLeft.isEmpty()}")
         return (diagonalLeft.isFilled() && diagonalLeft.piece!!.team != piece.team && farLeft.isEmpty())
     }
     fun isDiagonalRightKillable(x: Int, y: Int, piece: Piece, team: Teams = piece.team): Boolean {
@@ -241,6 +241,8 @@ class Board {
         if ((team == Teams.WHITE && y<=2) || (team == Teams.BLACK && y>=7) || (x>=7) ) return false
         val diagonalRight = getDiagonalRight(x,y, team)
         val farRight =  getFarDiagonalRight(x,y, team)
+        if (diagonalRight.piece != null) Log.d("DiagonalRight comparing pieces team", "${diagonalRight.piece!!.team != piece.team}")
+        Log.d("Diagonal right diagonalfilled-farempty","${diagonalRight.isFilled()}, ${farRight.isEmpty()}")
         return (diagonalRight.isFilled() && diagonalRight.piece!!.team != piece.team && farRight.isEmpty())
     }
 
