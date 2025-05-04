@@ -90,6 +90,8 @@ private fun MyApp(
     var body = stringResource(R.string.result_msg, finalizationDate, alias, userTeam, result, movements, userPieces, cpuPieces)
     if (time != "") {
         body += stringResource(R.string.time_involved, time)
+    } else {
+        body += stringResource(R.string.no_time)
     }
     val text = rememberSaveable { mutableStateOf(body) }
     val finalization = rememberSaveable { mutableStateOf(finalizationDate) }

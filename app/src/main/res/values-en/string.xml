@@ -1,2 +1,76 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="app_name">Checkers</string>
+
+    <string name="title_activity_menu">MenuActivity</string>
+    <string name="help_txt">Help</string>
+    <string name="start_game">Start game</string>
+    <string name="exit">Exit</string>
+
+    <string name="title_activity_help">HelpActivity</string>
+    <string name="title_rules">Rules</string>
+    <string name="text_rules">The game is based in checkers game and follows the american rules</string>
+    <string name="title_objective">Objective</string>
+    <string name="text_objective">The objective is to let the opponent without pieces or movements</string>
+    <string name="title_movement">Movement</string>
+    <string name="text_movement">Pawns can only move diagonally forward</string>
+    <string name="title_turns">Turns</string>
+    <string name="text_turns">Black pieces do the first movement, from there, turns are switched alternatively between black and whites</string>
+    <string name="title_capture">Capture</string>
+    <string name="text_capture"> To capture there has to be an enemy piece in the movement position with a free space behind the enemy piece.\n
+        Pawns can only capture forward.\n Capture is mandatory.\nCaptures can be linked only if the capture rules are followed.
+    </string>
+    <string name="title_dame">Dame</string>
+    <string name="text_dame">Pawns become dame when they reach the last row.\n
+        Unlike pawns, dames can move diagonally one space to all directions, allowing capture in all of them.
+    </string>
+    <string name="how_game_works">How does the game work?</string>
+    <string name="previous_page">Previous</string>
+    <string name="next_page">Next</string>
+    <string name="go_back">Go back</string>
+
+    <string name="title_activity_configuration">ConfigurationActivity</string>
+    <string name="configuration_title">Game configuration</string>
+    <string name="alias_placeholder">Introduce your name</string>
+    <string name="team">Select team</string>
+    <string name="white_team">White</string>
+    <string name="black_team">Black</string>
+    <string name="time_control">Time control</string>
+    <string name="minutes">Minutes</string>
+    <string name="seconds">Seconds</string>
+    <string name="start">Start game!</string>
+
+    <string name="CPU">CPU</string>
+    <string name="remaining_time">Remaining time</string>
+    <string name="white_wins">Whites win!</string>
+    <string name="black_wins">Blacks win!</string>
+    <string name="user_wins">%s has beaten the CPU in %d movements, ending the game with %d pieces.</string>
+    <string name="cpu_wins">CPU has beaten %s in %d movements, ending the game with %d pieces.</string>
+    <string name="time_winning">Additionally, the player had %s minutes left!</string>
+    <string name="accept">Accept</string>
+    <string name="win_by_time">CPU has won against %s because time expired.</string>
+    <string name="turn_count">Turn: %d</string>
+
+    <string name="title_activity_result">ResultActivity</string>
+    <string name="result_msg">Game finalized at %s.\n
+        Being user with the name %s playing %s team.\n
+        %s team has won the game in %d movements.\n
+        User ended the game with %d pieces, while the CPU ended with %d pieces.\n</string>
+    <string name="time_involved">There was a time limit of which there was %s minutes left.</string>
+    <string name="no_time">No time limit has ben set for the match</string>
+    <string name="alias">Alias</string>
+    <string name="result">Result</string>
+    <string name="user_team">User team</string>
+    <string name="user_pieces">User pieces</string>
+    <string name="cpu_pieces">CPU pieces</string>
+    <string name="movements">Movements</string>
+    <string name="time">Time</string>
+    <string name="time_finalization">Finalization date</string>
+    <string name="send">Send mail</string>
+    <string name="new_game">New game</string>
+    <string name="game_results">Results of the game</string>
+    <string name="email_placeholder">Enter your email</string>
+    <string name="email_body">Email body</string>
+    <string name="sending_meail">Sending email with</string>
+    <string name="email_not_found">Email application not found</string>
+
+</resources>
