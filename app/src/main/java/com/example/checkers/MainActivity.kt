@@ -79,7 +79,7 @@ class MainActivity : ComponentActivity() {
         val timeDeadline = intent.getBooleanExtra("timeDeadline", false)
         val minuteLimit = intent.getIntExtra("minuteLimit", 0)
         val secondLimit = intent.getIntExtra("secondLimit", 0)
-        val game: Game by viewModels()
+        val game: GameViewModel by viewModels()
 
         enableEdgeToEdge()
         setContent {
@@ -112,7 +112,7 @@ private fun MyApp(
     timeDeadline: Boolean,
     minuteLimit: Int,
     secondLimit: Int,
-    game: Game
+    game: GameViewModel
 ) {
     val team = if (whiteTeam) Teams.WHITE else Teams.BLACK
 
@@ -161,7 +161,7 @@ private fun BoardScreen(
     stopTimer: MutableState<Boolean>,
     whiteTeam: Boolean,
     alias: String,
-    game: Game,
+    game: GameViewModel,
     modifier: Modifier = Modifier,
 ) {
     val cells = game.cells
@@ -179,7 +179,7 @@ private fun VerticalBoard(
     whiteTeam: Boolean,
     alias: String,
     cells: MutableState<Array<Array<Cell>>>,
-    game: Game,
+    game: GameViewModel,
     modifier: Modifier = Modifier,
 )
 {
@@ -221,7 +221,7 @@ private  fun HorizontalBoard(
     whiteTeam: Boolean,
     alias: String,
     cells: MutableState<Array<Array<Cell>>>,
-    game: Game,
+    game: GameViewModel,
     modifier: Modifier = Modifier,
 ) {
     val loading = game.loading
@@ -279,7 +279,7 @@ private fun ShowDialog(
     timeDeadline: Boolean,
     remainingTime: MutableState<Int>,
     shouldStop: MutableState<Boolean>,
-    game: Game,
+    game: GameViewModel,
     context: Context
 ) {
     if (endingMessage.isNotEmpty()) {
@@ -434,7 +434,7 @@ private fun GameHeader(whiteTeam: Boolean, alias: String) {
 }
 
 @Composable
-private fun Piece(cell: Cell, game: Game, x: Int, y: Int) {
+private fun Piece(cell: Cell, game: GameViewModel, x: Int, y: Int) {
     if(cell.isFilled() || cell.isPossibleMovement()) {
         val image = when {
             cell.isPossibleMovement() -> R.drawable.possible_movement
@@ -472,7 +472,7 @@ private fun Piece(cell: Cell, game: Game, x: Int, y: Int) {
 }
 
 @Composable
-private fun Footer(game: Game) {
+private fun Footer(game: GameViewModel) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -508,7 +508,7 @@ private fun Footer(game: Game) {
 }
 
 @Composable
-private fun TurnCounter(game: Game, modifier: Modifier = Modifier) {
+private fun TurnCounter(game: GameViewModel, modifier: Modifier = Modifier) {
     val text = stringResource(R.string.turn_count, game.turnCount)
     Text(
         text = text,
@@ -523,6 +523,6 @@ private fun TurnCounter(game: Game, modifier: Modifier = Modifier) {
 }
 
 
-fun onTimeEnd(game: Game) {
+fun onTimeEnd(game: GameViewModel) {
     game.gameEnds("TIME ENDED", "CPU")
 }
