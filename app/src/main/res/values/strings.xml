@@ -76,4 +76,7 @@
     <string name="sending_meail">Enviando correo con</string>
     <string name="email_not_found">No se encontró la aplicación de correo</string>
 
+
+    <string name="game_register">Registro de partidas</string>
+
 </resources>

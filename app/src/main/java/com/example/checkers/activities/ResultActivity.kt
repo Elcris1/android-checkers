@@ -164,7 +164,6 @@ private fun VerticalApp(
         verticalArrangement = Arrangement.spacedBy(16.dp),
 
         ) {
-
         Results(alias, result, userTeam, userPieces, cpuPieces, movements, time, finalization)
 
         EditableData(email, text)

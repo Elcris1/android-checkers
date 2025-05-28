@@ -75,5 +75,6 @@
     <string name="email_body">Email body</string>
     <string name="sending_meail">Sending email with</string>
     <string name="email_not_found">Email application not found</string>
+    <string name="game_register">Game record</string>
 
 </resources>

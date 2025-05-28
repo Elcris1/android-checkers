@@ -73,9 +73,9 @@ private fun App(
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     if (isLandscape) {
-        HorizontalApp(context)
+        HorizontalApp(context, modifier.padding(padding))
     } else{
-        VerticalApp(context)
+        VerticalApp(context, modifier.padding(padding))
     }
 }
 @Composable
@@ -94,7 +94,7 @@ private fun HorizontalApp(context: Context, modifier: Modifier = Modifier) {
             Image(
                 painter = painterResource(id = R.drawable.logo),
                 contentDescription = "Logo",
-                modifier = Modifier.size(200.dp)
+                modifier = Modifier.size(225.dp)
             )
         }
 
@@ -103,6 +103,7 @@ private fun HorizontalApp(context: Context, modifier: Modifier = Modifier) {
         ) {
             PersonalizedButton(stringResource(R.string.help_txt), { navigate(context, HelpActivity::class.java) })
             PersonalizedButton(stringResource(R.string.start_game), { navigate(context, MainActivity::class.java) })
+            PersonalizedButton(stringResource(R.string.game_register)) { }
             PersonalizedButton(stringResource(R.string.exit), { (context as? Activity)?.finish() })
         }
 
@@ -129,6 +130,7 @@ private fun VerticalApp(context: Context, modifier: Modifier = Modifier) {
 
         PersonalizedButton(stringResource(R.string.help_txt), { navigate(context, HelpActivity::class.java) })
         PersonalizedButton(stringResource(R.string.start_game), { navigate(context, MainActivity::class.java) })
+        PersonalizedButton(stringResource(R.string.game_register)) { }
         PersonalizedButton(stringResource(R.string.exit), { (context as? Activity)?.finish() })
     }
 }
