@@ -42,6 +42,7 @@
     <string name="save_configuration">Guardar configuración</string>
     <string name="config_buton">Botón configuración</string>
 
+    <string name="MainActivity_name">Jugar</string>
     <string name="CPU">CPU</string>
     <string name="remaining_time">Tiempo restante</string>
     <string name="white_wins">Las blancas ganan!</string>
@@ -60,7 +61,8 @@
         Han sobrevivido %d piezas del usuario y %d del CPU.\n</string>
     <string name="time_involved">Había un límite de tiempo del cual han sobrado %s minutos.</string>
     <string name="no_time">No se ha jugado con un tiempo limite</string>
-    <string name="alias">Alias</string> //AKA en ingles
+    <string name="alias">Alias</string>
+    //AKA en ingles
     <string name="result">Resultado</string>
     <string name="user_team">Equipo usuario</string>
     <string name="user_pieces">Fichas usuario</string>
@@ -78,5 +80,6 @@
 
 
     <string name="game_register">Registro de partidas</string>
+    <string name="title_activity_game_results">GameResultsActivity</string>
 
 </resources>

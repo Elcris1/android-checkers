@@ -103,7 +103,7 @@ private fun HorizontalApp(context: Context, modifier: Modifier = Modifier) {
         ) {
             PersonalizedButton(stringResource(R.string.help_txt), { navigate(context, HelpActivity::class.java) })
             PersonalizedButton(stringResource(R.string.start_game), { navigate(context, MainActivity::class.java) })
-            PersonalizedButton(stringResource(R.string.game_register)) { }
+            PersonalizedButton(stringResource(R.string.game_register)) { navigate(context, GameResultsActivity::class.java) }
             PersonalizedButton(stringResource(R.string.exit), { (context as? Activity)?.finish() })
         }
 
@@ -130,7 +130,7 @@ private fun VerticalApp(context: Context, modifier: Modifier = Modifier) {
 
         PersonalizedButton(stringResource(R.string.help_txt), { navigate(context, HelpActivity::class.java) })
         PersonalizedButton(stringResource(R.string.start_game), { navigate(context, MainActivity::class.java) })
-        PersonalizedButton(stringResource(R.string.game_register)) { }
+        PersonalizedButton(stringResource(R.string.game_register)) {navigate(context, GameResultsActivity::class.java)  }
         PersonalizedButton(stringResource(R.string.exit), { (context as? Activity)?.finish() })
     }
 }

@@ -42,6 +42,7 @@
     <string name="save_configuration">Save configuration</string>
 
     <string name="config_buton">Configuration button</string>
+    <string name="MainActivity_name">Play</string>
     <string name="CPU">CPU</string>
     <string name="remaining_time">Remaining time</string>
     <string name="white_wins">Whites win!</string>
@@ -76,5 +77,6 @@
     <string name="sending_meail">Sending email with</string>
     <string name="email_not_found">Email application not found</string>
     <string name="game_register">Game record</string>
+    <string name="title_activity_game_results">GameResultsActivity</string>
 
 </resources>
