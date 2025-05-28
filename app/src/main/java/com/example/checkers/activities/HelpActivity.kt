@@ -44,6 +44,7 @@ class HelpActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            //TODO: añadir go back bar
             CheckersTheme {
                 Surface (modifier = Modifier.fillMaxSize()) {
                     HelpLayout()

@@ -1,7 +1,9 @@
 package com.example.checkers.activities
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -13,15 +15,29 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -34,7 +50,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.checkers.R
+import com.example.checkers.components.GoBackAppBar
+import com.example.checkers.datastore.DataStoreManager
 import com.example.checkers.ui.theme.CheckersTheme
+import kotlinx.coroutines.launch
 
 class ConfigurationActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,119 +61,213 @@ class ConfigurationActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CheckersTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    MyApp()
-                }
+                MyApp()
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MyApp() {
     val context = LocalContext.current
+
+    //SavedPreferences DataStore
+    val dataStoreManager = DataStoreManager(context)
+    val scope = rememberCoroutineScope()
+
+    //DAta from store
+    val aliasStore by dataStoreManager.alias.collectAsState(initial = "")
+    val isWhiteStore by dataStoreManager.isWhiteTeam.collectAsState(initial = true)
+    val isTimeEnabledStore by dataStoreManager.timeEnabled.collectAsState(initial = false)
+    val minutesStore by dataStoreManager.minutes.collectAsState(initial = 0)
+    val secs by dataStoreManager.seconds.collectAsState(initial = 0)
+
+    //mutables to handle local edition
     var alias by rememberSaveable { mutableStateOf("") }
-    var whiteTeam by rememberSaveable { mutableStateOf(true) }
-    var timeDeadline by rememberSaveable { mutableStateOf(false) }
+    var isWhite by rememberSaveable { mutableStateOf(true) }
+    var isTimeEnabled by rememberSaveable { mutableStateOf(false) }
     var minutes by rememberSaveable { mutableStateOf("") }
     var seconds by rememberSaveable { mutableStateOf("") }
 
-    Column (
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF2E3B4E))
-            .padding(30.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(
-            text = stringResource(R.string.configuration_title),
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.White
-        )
+    //Asignar valores
+    LaunchedEffect(aliasStore) {
+        alias = aliasStore
+        isWhite = isWhiteStore
+        isTimeEnabled = isTimeEnabledStore
+        minutes = minutesStore.toString()
+        seconds = secs.toString()
+    }
 
-        TextField(
-            value = alias,
-            onValueChange = { alias = it },
-            label = { Text(stringResource(R.string.alias_placeholder)) },
-            modifier = Modifier.fillMaxWidth(0.9f).padding(top = 16.dp)
-        )
+    //var alias by rememberSaveable { mutableStateOf("") }
 
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+
+    Scaffold(
+        topBar = { GoBackAppBar(stringResource(R.string.configuration_title)) },
+        containerColor = Color(0xFF2E3B4E)
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+                .padding(horizontal = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(stringResource(R.string.team), color = Color.White, fontSize = 16.sp)
+            // Alias
+            OutlinedTextField(
+                value = alias,
+                onValueChange = { alias = it },
+                label = { Text(stringResource(R.string.alias_placeholder), color = Color.White)  },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp),
+                singleLine = true,
+                colors = androidx.compose.material3.OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color(0xFFD0A43C),
+                    unfocusedBorderColor = Color.Gray,
+                    cursorColor = Color.White,
+                    focusedLabelColor = Color.White,
+                    unfocusedLabelColor = Color.LightGray,
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    disabledTextColor = Color.LightGray
+                )
+            )
 
-        }
-
-        Row(
-            modifier = Modifier.padding(top = 16.dp)
-        ) {
-            Button(
-                onClick = { whiteTeam = true },
-                colors = ButtonDefaults.buttonColors(containerColor = if (whiteTeam) Color(0xFFD0A43C) else Color.Gray),
-                modifier = Modifier.padding(end = 16.dp)
-            ) {
-                Text(stringResource(R.string.white_team))
-            }
-            Button(onClick = { whiteTeam = false }, colors = ButtonDefaults.buttonColors(containerColor = if (!whiteTeam) Color(0xFFD0A43C) else Color.Gray)) {
-                Text(stringResource(R.string.black_team))
-            }
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(0.9f),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+            // Equipo
             Text(
-                text = stringResource(R.string.time_control),
+                text = stringResource(R.string.team),
                 color = Color.White,
                 fontSize = 16.sp,
-                modifier = Modifier.padding(end = 16.dp)
+                modifier = Modifier.align(Alignment.Start)
             )
-            Switch(checked = timeDeadline, onCheckedChange = { timeDeadline = it })
-        }
 
-        if (timeDeadline) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                TextField(
-                    value = minutes,
-                    onValueChange = { minutes = it.filter { char -> char.isDigit() } },
-                    label = { Text(stringResource(R.string.minutes)) },
-                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                Button(
+                    onClick = { isWhite = true },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isWhite) Color(0xFFD0A43C) else Color.Gray
+                    ),
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
+                ) {
+                    Text(stringResource(R.string.white_team))
+                }
+
+                Button(
+                    onClick = { isWhite = false },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (!isWhite) Color(0xFFD0A43C) else Color.Gray
+                    ),
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
+                ) {
+                    Text(stringResource(R.string.black_team))
+                }
+            }
+
+            // Tiempo
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.time_control),
+                    color = Color.White,
+                    fontSize = 16.sp,
                     modifier = Modifier.weight(1f)
                 )
-
-                Text(":", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color.White)
-
-                TextField(
-                    value = seconds,
-                    onValueChange = { seconds = it.filter { char -> char.isDigit() } },
-                    label = { Text(stringResource(R.string.seconds)) },
-                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.weight(1f)
+                Switch(
+                    checked = isTimeEnabled,
+                    onCheckedChange = { isTimeEnabled = it }
                 )
+            }
+
+            // Entrada de minutos y segundos
+            if (isTimeEnabled) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    OutlinedTextField(
+                        value = minutes,
+                        onValueChange = { minutes = it.filter { char -> char.isDigit() } },
+                        label = { Text(stringResource(R.string.minutes), color = Color.White) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.weight(1f),
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color(0xFFD0A43C),
+                            unfocusedBorderColor = Color.Gray,
+                            cursorColor = Color.White,
+                            focusedLabelColor = Color.White,
+                            unfocusedLabelColor = Color.LightGray,
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                            disabledTextColor = Color.LightGray
+                        )
+                    )
+
+                    Text(
+                        ":",
+                        fontSize = 22.sp,
+                        color = Color.White,
+                        modifier = Modifier.padding(horizontal = 8.dp)
+                    )
+
+                    OutlinedTextField(
+                        value = seconds,
+                        onValueChange = { seconds = it.filter { char -> char.isDigit() }.take(2) },
+                        label = { Text(stringResource(R.string.seconds), color = Color.White) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.weight(1f),
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color(0xFFD0A43C),
+                            unfocusedBorderColor = Color.Gray,
+                            cursorColor = Color.White,
+                            focusedLabelColor = Color.White,
+                            unfocusedLabelColor = Color.LightGray,
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                            disabledTextColor = Color.LightGray
+                        )
+                    )
+                }
+            }
+
+            // Guardar configuración
+            Button(
+                onClick = {
+                    scope.launch {
+                        dataStoreManager.saveToDataStore(
+                            alias,
+                            isWhite,
+                            isTimeEnabled,
+                            minutes.toIntOrNull() ?: 0,
+                            seconds.toIntOrNull() ?: 0
+                        )
+                    }
+                },
+                enabled = alias.isNotBlank() &&
+                        (!isTimeEnabled || (minutes.isNotBlank() && seconds.isNotBlank())),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 24.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD0A43C)),
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp)
+            ) {
+                Text(text = stringResource(R.string.save_configuration))
             }
         }
 
-        Button(
-            enabled = if(timeDeadline) alias.isNotBlank() && minutes.isNotBlank() && seconds.isNotBlank() else alias.isNotBlank(),
-            onClick = {
-                val intent = Intent(context, MainActivity::class.java)
-                intent.putExtra("alias", alias)
-                intent.putExtra("whiteTeam", whiteTeam )
-                intent.putExtra("timeDeadline", timeDeadline)
-                if (timeDeadline) {
-                    intent.putExtra("minuteLimit", minutes.toInt())
-                    intent.putExtra("secondLimit", seconds.toInt())
-                }
-                context.startActivity(intent)
-            },
-            modifier = Modifier.fillMaxWidth(0.9f).padding(top = 16.dp)) {
-            Text(stringResource(R.string.start_game))
-        }
+
     }
 }

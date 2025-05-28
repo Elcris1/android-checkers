@@ -2,6 +2,7 @@
     <string name="app_name">Checkers</string>
 
     <string name="title_activity_menu">MenuActivity</string>
+    <string name="menu_title">Main menu</string>
     <string name="help_txt">Help</string>
     <string name="start_game">Start game</string>
     <string name="exit">Exit</string>
@@ -38,7 +39,9 @@
     <string name="minutes">Minutes</string>
     <string name="seconds">Seconds</string>
     <string name="start">Start game!</string>
+    <string name="save_configuration">Save configuration</string>
 
+    <string name="config_buton">Configuration button</string>
     <string name="CPU">CPU</string>
     <string name="remaining_time">Remaining time</string>
     <string name="white_wins">Whites win!</string>

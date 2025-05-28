@@ -224,7 +224,7 @@ class Board {
         val diagonalLeft = getDiagonalLeft(x, y, team)
         val farLeft = getFarDiagonalLeft(x,y, team)
         if (diagonalLeft.piece != null) {
-            //Log.d("DiagonalLeft", "DIF COLOR: ${diagonalLeft.piece!!.team != piece.team}, $diagonalLeft, $farLeft,  Result: ${(diagonalLeft.isFilled() && diagonalLeft.piece!!.team != piece.team && farLeft.isEmpty())}")
+            Log.d("DiagonalLeft", "DIF COLOR: ${diagonalLeft.piece!!.team != piece.team}, $diagonalLeft, $farLeft,  Result: ${(diagonalLeft.isFilled() && diagonalLeft.piece!!.team != piece.team && farLeft.isEmpty())}")
         }
         return (diagonalLeft.isFilled() && diagonalLeft.piece!!.team != piece.team && farLeft.isEmpty())
     }
@@ -239,7 +239,7 @@ class Board {
         val diagonalRight = getDiagonalRight(x,y, team)
         val farRight =  getFarDiagonalRight(x,y, team)
         if (diagonalRight.piece != null) {
-            //Log.d("DiagonalRight", "DIF COLOR: ${diagonalRight.piece!!.team != piece.team}, ${diagonalRight}, ${farRight}, Result: ${(diagonalRight.isFilled() && diagonalRight.piece!!.team != piece.team && farRight.isEmpty())}")
+            Log.d("DiagonalRight", "DIF COLOR: ${diagonalRight.piece!!.team != piece.team}, ${diagonalRight}, ${farRight}, Result: ${(diagonalRight.isFilled() && diagonalRight.piece!!.team != piece.team && farRight.isEmpty())}")
         }
         return (diagonalRight.isFilled() && diagonalRight.piece!!.team != piece.team && farRight.isEmpty())
     }

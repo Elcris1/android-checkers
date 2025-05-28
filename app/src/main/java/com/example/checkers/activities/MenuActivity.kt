@@ -12,6 +12,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,8 +20,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,6 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.checkers.R
+import com.example.checkers.components.GeneralAppBar
 import com.example.checkers.ui.theme.CheckersTheme
 
 class MenuActivity : ComponentActivity() {
@@ -41,8 +45,11 @@ class MenuActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CheckersTheme {
-                Surface (modifier = Modifier.fillMaxSize()) {
-                    App()
+                Scaffold(
+                    topBar = { GeneralAppBar(stringResource(R.string.menu_title)) },
+                    containerColor = Color(0xFF2E3B4E)
+                ) { padding ->
+                    App(padding = padding)
                 }
             }
         }
@@ -56,7 +63,8 @@ fun navigate(context: Context, cls: Class<*>) {
 
 @Composable
 private fun App(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    padding: PaddingValues
 ) {
     val context = LocalContext.current
     val configuration = LocalConfiguration.current

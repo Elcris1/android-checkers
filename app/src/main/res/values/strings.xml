@@ -2,6 +2,7 @@
     <string name="app_name">Damas</string>
 
     <string name="title_activity_menu">MenuActivity</string>
+    <string name="menu_title">Menú principal</string>
     <string name="help_txt">Ayuda</string>
     <string name="start_game">Empezar partida</string>
     <string name="exit">Salir</string>
@@ -38,6 +39,8 @@
     <string name="minutes">Minutos</string>
     <string name="seconds">Segundos</string>
     <string name="start">Empezar partida!</string>
+    <string name="save_configuration">Guardar configuración</string>
+    <string name="config_buton">Botón configuración</string>
 
     <string name="CPU">CPU</string>
     <string name="remaining_time">Tiempo restante</string>
