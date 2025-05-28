@@ -10,6 +10,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.checkers.data.constants.Teams
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlin.math.min
 
@@ -36,6 +37,15 @@ class DataStoreManager(private val context: Context) {
         }
     }
 
+    data class ConfigData(
+        val alias: String,
+        val isWhite: Boolean,
+        val timeEnabled: Boolean,
+        val minutes: Int,
+        val seconds: Int
+    )
+
+
     val alias: Flow<String> = context.dataStore.data.map {
         it[PreferencesKeys.ALIAS_KEY] ?: ""
     }
@@ -53,6 +63,16 @@ class DataStoreManager(private val context: Context) {
     }
     val seconds: Flow<Int> = context.dataStore.data.map {
         it[PreferencesKeys.TIME_SECONDS] ?: 0
+    }
+
+    val configuration: Flow<ConfigData> = combine(
+        alias,
+        isWhiteTeam,
+        timeEnabled,
+        minutes,
+        seconds
+    ) { alias, team, time, min, sec ->
+        ConfigData(alias, team, time, min, sec)
     }
 
     suspend fun setAlias(alias: String) {

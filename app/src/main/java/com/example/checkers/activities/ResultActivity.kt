@@ -15,6 +15,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,6 +25,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -42,6 +44,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.checkers.R
+import com.example.checkers.components.GeneralAppBar
 import com.example.checkers.ui.theme.CheckersTheme
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -64,8 +67,11 @@ class ResultActivity : ComponentActivity() {
 
         setContent {
             CheckersTheme {
-                Surface (modifier = Modifier.fillMaxSize()) {
-                    MyApp(alias, result, userTeam, userPieces, cpuPieces, movements, time, finalizationDate)
+                Scaffold(
+                    topBar = { GeneralAppBar(stringResource(R.string.game_results)) },
+                    containerColor = Color(0xFF2E3B4E)
+                ) {  paddingValues ->
+                    MyApp(alias, result, userTeam, userPieces, cpuPieces, movements, time, finalizationDate, paddingValues)
                 }
             }
         }
@@ -81,7 +87,8 @@ private fun MyApp(
     cpuPieces: Int,
     movements: Int,
     time: String,
-    finalizationDate: String
+    finalizationDate: String,
+    paddingValues: PaddingValues
 ) {
     val email = rememberSaveable { mutableStateOf("ecp16@alumnes.udl.cat") }
     var body = stringResource(R.string.result_msg, finalizationDate, alias, userTeam, result, movements, userPieces, cpuPieces)
@@ -109,7 +116,8 @@ private fun MyApp(
             time = time,
             finalization = finalization,
             email = email,
-            text = text
+            text = text,
+            paddingValues
         )
     } else {
         VerticalApp(
@@ -123,7 +131,8 @@ private fun MyApp(
             time = time,
             finalization = finalization,
             email = email,
-            text = text
+            text = text,
+            paddingValues
         )
     }
 
@@ -141,25 +150,20 @@ private fun VerticalApp(
     time: String,
     finalization: MutableState<String>,
     email: MutableState<String>,
-    text: MutableState<String>
+    text: MutableState<String>,
+    paddingVal: PaddingValues
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF2E3B4E))
             .verticalScroll(rememberScrollState())
-            .padding(16.dp),
+            .padding(16.dp)
+            .padding(paddingVal),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp),
 
         ) {
-        Text(
-            stringResource(R.string.game_results),
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.White,
-            modifier = Modifier.padding(top = 16.dp)
-        )
 
         Results(alias, result, userTeam, userPieces, cpuPieces, movements, time, finalization)
 
@@ -191,22 +195,18 @@ private fun HorizontalApp(
     time: String,
     finalization: MutableState<String>,
     email: MutableState<String>,
-    text: MutableState<String>
+    text: MutableState<String>,
+    padding: PaddingValues
 ) {
 
     Column (
-        modifier =  Modifier.fillMaxSize()
+        modifier =  Modifier
+            .fillMaxSize()
             .background(Color(0xFF2E3B4E))
+            .padding(padding)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            stringResource(R.string.game_results),
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.White,
-            modifier = Modifier.padding(top = 16.dp)
-        )
         Row(
             modifier = Modifier
                 .fillMaxWidth()

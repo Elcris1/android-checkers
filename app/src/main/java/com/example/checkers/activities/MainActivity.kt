@@ -36,6 +36,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -61,17 +62,22 @@ import com.example.checkers.data.constants.CellType
 import com.example.checkers.viewmodels.GameViewModel
 import com.example.checkers.R
 import com.example.checkers.data.constants.Teams
+import com.example.checkers.datastore.DataStoreManager
 import com.example.checkers.ui.theme.CheckersTheme
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        //TODO: adapt this to dataStore preferences
         val alias = intent.getStringExtra("alias") ?: "Player"
         val whiteTeam = intent.getBooleanExtra("whiteTeam", true)
         val timeDeadline = intent.getBooleanExtra("timeDeadline", false)
         val minuteLimit = intent.getIntExtra("minuteLimit", 0)
         val secondLimit = intent.getIntExtra("secondLimit", 0)
+
+
         val game: GameViewModel by viewModels()
 
         enableEdgeToEdge()
@@ -82,11 +88,6 @@ class MainActivity : ComponentActivity() {
                     color = Color(0xFF2E3B4E))
                 {
                     MyApp(
-                        alias = alias,
-                        whiteTeam = whiteTeam,
-                        timeDeadline = timeDeadline,
-                        minuteLimit = minuteLimit,
-                        secondLimit = secondLimit,
                         game = game
                     )
 
@@ -100,21 +101,45 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun MyApp(
     modifier: Modifier = Modifier,
-    alias: String,
-    whiteTeam: Boolean,
-    timeDeadline: Boolean,
-    minuteLimit: Int,
-    secondLimit: Int,
     game: GameViewModel
 ) {
-    val team = if (whiteTeam) Teams.WHITE else Teams.BLACK
 
+    //DAta from store
+    val context = LocalContext.current
+    val dataStoreManager = DataStoreManager(context)
+
+
+    val config by dataStoreManager.configuration.collectAsState(initial = null)
+
+    if (config == null) {
+        CircularProgressIndicator()
+    } else {
+        LoadGame(context, config!!, game)
+    }
+
+
+
+
+
+
+}
+
+@Composable
+private fun LoadGame(context: Context, config: DataStoreManager.ConfigData, game: GameViewModel, modifier: Modifier = Modifier) {
+
+
+    val alias = config.alias
+    val whiteTeam = config.isWhite
+    val timeDeadline = config.timeEnabled
+    val minuteLimit = config.minutes
+    val secondLimit = config.seconds
+
+    val team = if (whiteTeam) Teams.WHITE else Teams.BLACK
 
     LaunchedEffect(Unit) {
         game.firstTurn(team)
     }
 
-    val context = LocalContext.current
 
     val endingMessage = game.mensaje
     var showDialog by remember { mutableStateOf(false) }
@@ -144,7 +169,6 @@ private fun MyApp(
 
         BoardScreen(isLandscape, timeDeadline, remainingTime, stopTimer, whiteTeam, alias, game)
     }
-
 }
 @Composable
 private fun BoardScreen(
