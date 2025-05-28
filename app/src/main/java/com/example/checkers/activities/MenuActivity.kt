@@ -13,10 +13,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -70,12 +72,52 @@ private fun App(
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
+    if (isLandscape) {
+        HorizontalApp(context)
+    } else{
+        VerticalApp(context)
+    }
+}
+@Composable
+private fun HorizontalApp(context: Context, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier
+            .fillMaxSize()
+            .background(Color(0xFF2E3B4E))
+            .padding(horizontal = 32.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.logo),
+                contentDescription = "Logo",
+                modifier = Modifier.size(200.dp)
+            )
+        }
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            PersonalizedButton(stringResource(R.string.help_txt), { navigate(context, HelpActivity::class.java) })
+            PersonalizedButton(stringResource(R.string.start_game), { navigate(context, MainActivity::class.java) })
+            PersonalizedButton(stringResource(R.string.exit), { (context as? Activity)?.finish() })
+        }
+
+
+    }
+}
+
+@Composable
+private fun VerticalApp(context: Context, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(Color(0xFF2E3B4E)),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = if(isLandscape) Arrangement.SpaceEvenly else Arrangement.Center
+        verticalArrangement = Arrangement.Center
     ) {
         Image(
             painter = painterResource(id = R.drawable.logo),
@@ -86,11 +128,13 @@ private fun App(
         Spacer(modifier = Modifier.height(24.dp))
 
         PersonalizedButton(stringResource(R.string.help_txt), { navigate(context, HelpActivity::class.java) })
-        PersonalizedButton(stringResource(R.string.start_game), { navigate(context, ConfigurationActivity::class.java) })
+        PersonalizedButton(stringResource(R.string.start_game), { navigate(context, MainActivity::class.java) })
         PersonalizedButton(stringResource(R.string.exit), { (context as? Activity)?.finish() })
     }
 }
 
+
+//TODO: make button as component
 @Composable
 fun PersonalizedButton(txt: String, onClick: () -> Unit) {
     Button(

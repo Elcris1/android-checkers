@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
@@ -71,6 +73,7 @@ class ConfigurationActivity : ComponentActivity() {
 @Composable
 private fun MyApp() {
     val context = LocalContext.current
+    val scrollState = rememberScrollState()
 
     //SavedPreferences DataStore
     val dataStoreManager = DataStoreManager(context)
@@ -110,9 +113,11 @@ private fun MyApp() {
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
+                .verticalScroll(scrollState)
                 .padding(horizontal = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            //TODO: make outlinedFieldText as composable funciton and rehutilizable
             // Alias
             OutlinedTextField(
                 value = alias,
