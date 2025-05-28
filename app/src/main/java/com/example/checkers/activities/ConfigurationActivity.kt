@@ -93,7 +93,7 @@ private fun MyApp() {
     var minutes by rememberSaveable { mutableStateOf("") }
     var seconds by rememberSaveable { mutableStateOf("") }
 
-    //Asignar valores
+    //Set values
     LaunchedEffect(aliasStore) {
         alias = aliasStore
         isWhite = isWhiteStore
@@ -248,7 +248,7 @@ private fun MyApp() {
                 }
             }
 
-            // Guardar configuración
+            // TODO: show toast
             Button(
                 onClick = {
                     scope.launch {

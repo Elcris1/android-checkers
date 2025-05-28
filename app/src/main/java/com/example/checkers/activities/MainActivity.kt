@@ -61,24 +61,21 @@ import com.example.checkers.data.Cell
 import com.example.checkers.data.constants.CellType
 import com.example.checkers.viewmodels.GameViewModel
 import com.example.checkers.R
+import com.example.checkers.data.GameResultBuilder
 import com.example.checkers.data.constants.Teams
+import com.example.checkers.data.local.entity.GameResult
 import com.example.checkers.datastore.DataStoreManager
 import com.example.checkers.ui.theme.CheckersTheme
+import com.example.checkers.viewmodels.ResultViewModel
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //TODO: adapt this to dataStore preferences
-        val alias = intent.getStringExtra("alias") ?: "Player"
-        val whiteTeam = intent.getBooleanExtra("whiteTeam", true)
-        val timeDeadline = intent.getBooleanExtra("timeDeadline", false)
-        val minuteLimit = intent.getIntExtra("minuteLimit", 0)
-        val secondLimit = intent.getIntExtra("secondLimit", 0)
-
 
         val game: GameViewModel by viewModels()
+        val resultViewModel: ResultViewModel by viewModels()
 
         enableEdgeToEdge()
         setContent {
@@ -88,7 +85,8 @@ class MainActivity : ComponentActivity() {
                     color = Color(0xFF2E3B4E))
                 {
                     MyApp(
-                        game = game
+                        game = game,
+                        result = resultViewModel
                     )
 
                 }
@@ -101,7 +99,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun MyApp(
     modifier: Modifier = Modifier,
-    game: GameViewModel
+    game: GameViewModel,
+    result: ResultViewModel
 ) {
 
     //DAta from store
@@ -114,7 +113,7 @@ private fun MyApp(
     if (config == null) {
         CircularProgressIndicator()
     } else {
-        LoadGame(context, config!!, game)
+        LoadGame(context, config!!, game, result)
     }
 
 
@@ -125,7 +124,7 @@ private fun MyApp(
 }
 
 @Composable
-private fun LoadGame(context: Context, config: DataStoreManager.ConfigData, game: GameViewModel, modifier: Modifier = Modifier) {
+private fun LoadGame(context: Context, config: DataStoreManager.ConfigData, game: GameViewModel, result: ResultViewModel, modifier: Modifier = Modifier) {
 
 
     val alias = config.alias
@@ -164,7 +163,7 @@ private fun LoadGame(context: Context, config: DataStoreManager.ConfigData, game
         }
 
         if (showDialog) {
-            ShowDialog(endingMessage.value, team, alias,  timeDeadline, remainingTime, stopTimer, game, context)
+            ShowDialog(endingMessage.value, team, alias,  timeDeadline, remainingTime, stopTimer, game, result, context)
         }
 
         BoardScreen(isLandscape, timeDeadline, remainingTime, stopTimer, whiteTeam, alias, game)
@@ -297,13 +296,18 @@ private fun ShowDialog(
     remainingTime: MutableState<Int>,
     shouldStop: MutableState<Boolean>,
     game: GameViewModel,
+    result: ResultViewModel,
     context: Context
 ) {
     if (endingMessage.isNotEmpty()) {
         val intent = Intent(context, ResultActivity::class.java)
         val title: String
         var message: String
+        val gameResultBuilder = GameResultBuilder()
+
         if (endingMessage != "CPU") {
+
+            //Check which team has won
             if (endingMessage == "WHITE WINS!") {
                 title = stringResource(R.string.white_wins)
                 intent.putExtra("result", Teams.WHITE.toString())
@@ -311,6 +315,8 @@ private fun ShowDialog(
                 title = stringResource(R.string.black_wins)
                 intent.putExtra("result", Teams.BLACK.toString())
             }
+
+            //Check if user is the winner or the cpu
             message = if (userTeam == Teams.WHITE && endingMessage == "WHITE WINS!" || userTeam == Teams.BLACK && endingMessage == "BLACK WINS!") {
                 stringResource(R.string.user_wins, alias, game.turnCount, game.getNumberUserPieces())
             } else {
@@ -319,22 +325,36 @@ private fun ShowDialog(
             shouldStop.value = true
             if (timeDeadline) {
                 intent.putExtra("time", calcRemainingTime(remainingTime))
+                gameResultBuilder.leftOverTime = calcRemainingTime(remainingTime)
                 message += "\n" + stringResource(R.string.time_winning, calcRemainingTime(remainingTime))
             }
         } else {
+            //if user uns out of time
             title = if (userTeam == Teams.WHITE) stringResource(R.string.black_wins) else stringResource(
                 R.string.white_wins
             )
             message = stringResource(R.string.win_by_time, alias)
             intent.putExtra("time", calcRemainingTime(remainingTime))
+            gameResultBuilder.leftOverTime = calcRemainingTime(remainingTime)
             intent.putExtra("result", if(userTeam== Teams.WHITE) Teams.BLACK.toString() else Teams.WHITE.toString())
         }
-        Log.d("Enviando datos", calcRemainingTime(remainingTime))
+
+        gameResultBuilder.timeDeadLine = timeDeadline
+        gameResultBuilder.result = title
         intent.putExtra("alias", alias)
+        gameResultBuilder.alias = alias
         intent.putExtra("userTeam", userTeam.toString())
+        //TODO: FIX THIS
+        gameResultBuilder.userTeam = userTeam.toString()
         intent.putExtra("numberPiecesUser", game.getNumberUserPieces())
+        gameResultBuilder.userPieces = game.getNumberUserPieces()
         intent.putExtra("numberPiecesCPU", game.getNumberCPUPieces())
+        gameResultBuilder.cpuPieces = game.getNumberCPUPieces()
         intent.putExtra("movements", game.turnCount)
+        gameResultBuilder.totalMovements = game.turnCount
+
+
+        result.addGameResult(gameResultBuilder.build())
 
         Dialog(onDismissRequest = { context.startActivity(intent) }) {
             Box(
