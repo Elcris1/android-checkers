@@ -42,6 +42,35 @@ class GameViewModel: ViewModel() {
     var forceKill = false
     var availablePieces: MutableList<Piece> = mutableListOf()
 
+    fun getBlackCount(): Int {
+        return blackCount
+    }
+
+    fun getWhiteCount(): Int {
+        return whiteCount
+    }
+
+    fun getTurnCount(): Int {
+        return turnCount
+    }
+
+    fun getActualTurn(): Teams {
+        return turn
+    }
+
+    fun isLoading(): Boolean {
+        return loading.value
+    }
+
+    fun getEndMessage(): String {
+        return mensaje.value
+    }
+
+    fun getAvailablePieces(): MutableList<Piece> {
+        return availablePieces
+    }
+
+
 
 
     private fun updateBoard() {
