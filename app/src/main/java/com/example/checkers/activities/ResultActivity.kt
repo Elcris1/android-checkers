@@ -345,7 +345,7 @@ private fun sendMail(email:String, body: String, subject: String, context: Conte
 }
 
 private fun playAgain(context: Context) {
-    val intent = Intent(context, ConfigurationActivity::class.java)
+    val intent = Intent(context, MainActivity::class.java)
     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
     context.startActivity(intent)
 }

@@ -64,8 +64,8 @@ class GameViewModel: ViewModel() {
         return loading.value
     }
 
-    fun getEndMessage(): MutableState<String> {
-        return mensaje
+    fun getEndMessage(): String {
+        return mensaje.value
     }
 
     fun getAvailablePieces(): MutableList<Piece> {

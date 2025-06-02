@@ -157,13 +157,13 @@ private fun LoadGame(context: Context, config: DataStoreManager.ConfigData, game
     Column(modifier=  modifier.fillMaxSize()) {
 
         LaunchedEffect(endingMessage) {
-            if (endingMessage.value.isNotBlank()) {
+            if (endingMessage.isNotBlank()) {
                 showDialog = true
             }
         }
 
         if (showDialog) {
-            ShowDialog(endingMessage.value, team, alias,  timeDeadline, remainingTime, stopTimer, game, result, context)
+            ShowDialog(endingMessage, team, alias,  timeDeadline, remainingTime, stopTimer, game, result, context)
         }
 
         BoardScreen(isLandscape, timeDeadline, remainingTime, stopTimer, whiteTeam, alias, game)
