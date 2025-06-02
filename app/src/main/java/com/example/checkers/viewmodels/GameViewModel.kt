@@ -15,6 +15,8 @@ import kotlinx.coroutines.launch
 
 class GameViewModel: ViewModel() {
 
+    //TODO: privatize vars
+
     init {
         Log.d("GameViewModel", "ViewModel inicializado")
     }
@@ -23,12 +25,12 @@ class GameViewModel: ViewModel() {
     val cells: MutableState<Array<Array<Cell>>> = mutableStateOf(board.cells)
 
     // number of pieces alive
-    var blackCount = 12
-    var whiteCount = 12
+    private var blackCount = 12
+    private var whiteCount = 12
 
     //turns
-    var turn: Teams = Teams.BLACK
-    var turnCount = 0
+    private var turn: Teams = Teams.BLACK
+    private var turnCount = 0
     var playerTeam: Teams = Teams.WHITE
     lateinit var selectedCell: Position
 
@@ -36,11 +38,11 @@ class GameViewModel: ViewModel() {
     //CPU delay interaction
     val loading: MutableState<Boolean> = mutableStateOf(false)
     //Ending game
-    val mensaje: MutableState<String> = mutableStateOf("")
+    private val mensaje: MutableState<String> = mutableStateOf("")
 
     //Force kill user rule
-    var forceKill = false
-    var availablePieces: MutableList<Piece> = mutableListOf()
+    private var forceKill = false
+    private var availablePieces: MutableList<Piece> = mutableListOf()
 
     fun getBlackCount(): Int {
         return blackCount
@@ -62,14 +64,17 @@ class GameViewModel: ViewModel() {
         return loading.value
     }
 
-    fun getEndMessage(): String {
-        return mensaje.value
+    fun getEndMessage(): MutableState<String> {
+        return mensaje
     }
 
     fun getAvailablePieces(): MutableList<Piece> {
         return availablePieces
     }
 
+    fun isForceKill(): Boolean {
+        return forceKill
+    }
 
 
 

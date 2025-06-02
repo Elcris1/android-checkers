@@ -140,7 +140,7 @@ private fun LoadGame(context: Context, config: DataStoreManager.ConfigData, game
     }
 
 
-    val endingMessage = game.mensaje
+    val endingMessage = game.getEndMessage()
     var showDialog by remember { mutableStateOf(false) }
     val remainingTime = rememberSaveable { mutableIntStateOf((minuteLimit * 60 + secondLimit)) }
     val stopTimer = rememberSaveable{ mutableStateOf(false) }
@@ -156,7 +156,7 @@ private fun LoadGame(context: Context, config: DataStoreManager.ConfigData, game
 
     Column(modifier=  modifier.fillMaxSize()) {
 
-        LaunchedEffect(endingMessage.value) {
+        LaunchedEffect(endingMessage) {
             if (endingMessage.value.isNotBlank()) {
                 showDialog = true
             }
@@ -318,9 +318,9 @@ private fun ShowDialog(
 
             //Check if user is the winner or the cpu
             message = if (userTeam == Teams.WHITE && endingMessage == "WHITE WINS!" || userTeam == Teams.BLACK && endingMessage == "BLACK WINS!") {
-                stringResource(R.string.user_wins, alias, game.turnCount, game.getNumberUserPieces())
+                stringResource(R.string.user_wins, alias, game.getTurnCount(), game.getNumberUserPieces())
             } else {
-                stringResource(R.string.cpu_wins, alias, game.turnCount, game.getNumberCPUPieces())
+                stringResource(R.string.cpu_wins, alias, game.getTurnCount(), game.getNumberCPUPieces())
             }
             shouldStop.value = true
             if (timeDeadline) {
@@ -351,8 +351,8 @@ private fun ShowDialog(
         gameResultBuilder.userPieces = game.getNumberUserPieces()
         intent.putExtra("numberPiecesCPU", game.getNumberCPUPieces())
         gameResultBuilder.cpuPieces = game.getNumberCPUPieces()
-        intent.putExtra("movements", game.turnCount)
-        gameResultBuilder.totalMovements = game.turnCount
+        intent.putExtra("movements", game.getTurnCount())
+        gameResultBuilder.totalMovements = game.getTurnCount()
 
 
         result.addGameResult(gameResultBuilder.build())
@@ -496,9 +496,9 @@ private fun Piece(cell: Cell, game: GameViewModel, x: Int, y: Int) {
                 modifier = Modifier
                     .size(60.dp)
                     .clickable(
-                        enabled = (cell.piece != null && cell.piece!!.team == game.turn && !game.forceKill)
+                        enabled = (cell.piece != null && cell.piece!!.team == game.getActualTurn() && !game.isForceKill())
                                 || cell.isPossibleMovement()
-                                || game.forceKill && game.availablePieces.contains(
+                                || game.isForceKill() && game.getAvailablePieces().contains(
                             cell.piece
                         )
                     ) {
@@ -535,7 +535,7 @@ private fun Footer(game: GameViewModel) {
                 .padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            WhiteText(stringResource(R.string.black_team) + ": ${game.blackCount}", 18.sp, Color.Black)
+            WhiteText(stringResource(R.string.black_team) + ": ${game.getBlackCount()}", 18.sp, Color.Black)
         }
 
         Column(
@@ -546,14 +546,14 @@ private fun Footer(game: GameViewModel) {
                 .padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            WhiteText(stringResource(R.string.white_team) + ": ${game.whiteCount}", 18.sp, Color.Black)
+            WhiteText(stringResource(R.string.white_team) + ": ${game.getWhiteCount()}", 18.sp, Color.Black)
         }
     }
 }
 
 @Composable
 private fun TurnCounter(game: GameViewModel, modifier: Modifier = Modifier) {
-    val text = stringResource(R.string.turn_count, game.turnCount)
+    val text = stringResource(R.string.turn_count, game.getTurnCount())
     Text(
         text = text,
         fontSize = 16.sp,
