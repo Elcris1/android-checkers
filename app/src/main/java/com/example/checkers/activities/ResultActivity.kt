@@ -176,7 +176,8 @@ private fun VerticalApp(
                 context
             )
         }
-        FancyButton(stringResource(R.string.new_game)) { playAgain(context) }
+        FancyButton(stringResource(R.string.new_game)) { navigateCleaningStack(context, MainActivity::class.java) }
+        FancyButton(stringResource(R.string.menu_title)) { navigateCleaningStack(context, MenuActivity::class.java) }
         FancyButton(stringResource(R.string.exit)) { (context as? Activity)?.finishAffinity() }
 
     }
@@ -236,7 +237,8 @@ private fun HorizontalApp(
                 context
             )
         }
-        FancyButton(stringResource(R.string.new_game)) { playAgain(context) }
+        FancyButton(stringResource(R.string.new_game)) { navigateCleaningStack(context, MainActivity::class.java) }
+        FancyButton(stringResource(R.string.menu_title)) { navigateCleaningStack(context, MenuActivity::class.java) }
         FancyButton(stringResource(R.string.exit)) { (context as? Activity)?.finishAffinity() }
     }
 
@@ -344,8 +346,9 @@ private fun sendMail(email:String, body: String, subject: String, context: Conte
     }
 }
 
-private fun playAgain(context: Context) {
-    val intent = Intent(context, MainActivity::class.java)
+
+private fun navigateCleaningStack(context: Context, cls: Class<*>) {
+    val intent = Intent(context, cls )
     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
     context.startActivity(intent)
 }
