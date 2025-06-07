@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import com.example.checkers.data.local.dao.GameResultDAO
 import com.example.checkers.data.local.entity.GameResult
 
-@Database(entities = [GameResult::class], version = 1)
+@Database(entities = [GameResult::class], version = 2)
 abstract class CheckersDatabase: RoomDatabase() {
     abstract fun gameResultsDao() : GameResultDAO
     companion object {
@@ -19,7 +19,9 @@ abstract class CheckersDatabase: RoomDatabase() {
                     context.applicationContext,
                     CheckersDatabase::class.java,
                     "checkers_database"
-                ).build().also { INSTANCE = it }
+                )
+                    .fallbackToDestructiveMigration()
+                    .build().also { INSTANCE = it }
             }
         }
     }

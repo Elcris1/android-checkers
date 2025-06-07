@@ -81,5 +81,26 @@
 
     <string name="game_register">Registro de partidas</string>
     <string name="title_activity_game_results">GameResultsActivity</string>
+    <string name="win">Victoria</string>
+    <string name="lose">Derrota</string>
+
+    <string name="title_activity_detail_reg">DetailReg</string>
+    <string name="game_details">Detalles de la partida</string>
+    <string name="game_list">Listado de partidas</string>
+    <string name="game_information">Información de la partida</string>
+    <string name="game_winner">Gana el equipo %s !</string>
+    <string name="game_player">Jugador: %s</string>
+    <string name="game_date">Fecha de la partida: %s</string>
+    <string name="game_player_team">Equipo del jugador</string>
+    <string name="game_cpu_team">Equipo CPU</string>
+    <string name="game_user_pieces">Piezas del jugador</string>
+    <string name="game_cpu_pieces">Piezas CPU</string>
+    <string name="game_movements">Movimientos</string>
+    <string name="game_time_deadline">Tiempo límite</string>
+    <string name="yes">Sí</string>
+    <string name="no">No</string>
+    <string name="game_leftover_time">Tiempo Restante</string>
+    <string name="game_no_leftover">No habilitado</string>
+    
 
 </resources>

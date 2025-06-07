@@ -78,5 +78,24 @@
     <string name="email_not_found">Email application not found</string>
     <string name="game_register">Game record</string>
     <string name="title_activity_game_results">GameResultsActivity</string>
+    <string name="win">Victory</string>
+    <string name="lose">Lose</string>
+    <string name="title_activity_detail_reg">DetailReg</string>
+    <string name="game_details">Game details</string>
+    <string name="game_list">List of games</string>
+    <string name="game_information">Game information</string>
+    <string name="game_winner">%s wins!</string>
+    <string name="game_player">Player: %s</string>
+    <string name="game_date">Date of the game: %s</string>
+    <string name="game_player_team">Player team</string>
+    <string name="game_cpu_team">CPU team</string>
+    <string name="game_user_pieces">Player pieces</string>
+    <string name="game_cpu_pieces">CPU pieces</string>
+    <string name="game_movements">Movements</string>
+    <string name="game_time_deadline">Time limit</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="game_leftover_time">Leftover time</string>
+    <string name="game_no_leftover">Not enabled</string>
 
 </resources>

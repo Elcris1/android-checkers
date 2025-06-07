@@ -10,6 +10,7 @@ import java.util.Locale
 class GameResultBuilder {
     var alias: String = ""
     var userTeam: String = ""
+    var winnerTeam: String = ""
     var result: String = ""
     var userPieces: Int = 0
     var cpuPieces: Int = 0
@@ -18,9 +19,11 @@ class GameResultBuilder {
     var leftOverTime: String = ""
 
     fun build(): GameResult {
+
         return GameResult(
             alias = alias,
             userTeam =  userTeam,
+            winnerTeam = winnerTeam,
             result = result,
             userPieces = userPieces,
             cpuPieces = cpuPieces,

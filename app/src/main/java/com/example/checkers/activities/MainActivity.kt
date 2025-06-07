@@ -311,9 +311,11 @@ private fun ShowDialog(
             if (endingMessage == "WHITE WINS!") {
                 title = stringResource(R.string.white_wins)
                 intent.putExtra("result", Teams.WHITE.toString())
+                gameResultBuilder.winnerTeam = Teams.WHITE.toString()
             } else {
                 title = stringResource(R.string.black_wins)
                 intent.putExtra("result", Teams.BLACK.toString())
+                gameResultBuilder.winnerTeam = Teams.BLACK.toString()
             }
 
             //Check if user is the winner or the cpu
@@ -333,6 +335,7 @@ private fun ShowDialog(
             title = if (userTeam == Teams.WHITE) stringResource(R.string.black_wins) else stringResource(
                 R.string.white_wins
             )
+            gameResultBuilder.winnerTeam = if(userTeam == Teams.WHITE) Teams.BLACK.toString() else Teams.WHITE.toString()
             message = stringResource(R.string.win_by_time, alias)
             intent.putExtra("time", calcRemainingTime(remainingTime))
             gameResultBuilder.leftOverTime = calcRemainingTime(remainingTime)
