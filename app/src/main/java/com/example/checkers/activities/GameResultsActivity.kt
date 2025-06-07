@@ -270,7 +270,7 @@ private fun GameDetail(gameResult: GameResult?) {
 
 }
 @Composable
-private fun InfoRow(label: String, value: String) {
+fun InfoRow(label: String, value: String) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier.fillMaxWidth()
