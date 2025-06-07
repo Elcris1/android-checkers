@@ -27,6 +27,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
@@ -47,6 +48,7 @@ import com.example.checkers.activities.ui.theme.CheckersTheme
 import com.example.checkers.components.GoBackAppBar
 import com.example.checkers.data.local.entity.GameResult
 import com.example.checkers.viewmodels.ResultViewModel
+import kotlinx.coroutines.supervisorScope
 
 class GameResultsActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
@@ -57,15 +59,7 @@ class GameResultsActivity : ComponentActivity() {
         setContent {
             val windowSizeClass = calculateWindowSizeClass(this)
 
-            val widthClass = windowSizeClass.widthSizeClass
-            val heightClass = windowSizeClass.heightSizeClass
-
-
-            val isTablet = widthClass == WindowWidthSizeClass.Medium && heightClass == WindowHeightSizeClass.Medium
-                                || widthClass == WindowWidthSizeClass.Expanded || heightClass == WindowHeightSizeClass.Expanded
-
-
-            if (isTablet) {
+            if (isTablet(windowSizeClass)) {
                 CheckersTheme {
                     Scaffold(
                         modifier = Modifier.fillMaxSize(),
@@ -290,4 +284,15 @@ private fun goToDetailReg(context: Context, result: GameResult) {
     val intent = Intent(context, DetailReg::class.java)
     intent.putExtra("result", result)
     context.startActivity(intent)
+}
+
+fun isTablet(windowSizeClass: WindowSizeClass) : Boolean {
+    val widthClass = windowSizeClass.widthSizeClass
+    val heightClass = windowSizeClass.heightSizeClass
+
+
+    val isTablet = widthClass == WindowWidthSizeClass.Medium && heightClass == WindowHeightSizeClass.Medium
+            || widthClass == WindowWidthSizeClass.Expanded || heightClass == WindowHeightSizeClass.Expanded
+
+    return  isTablet
 }

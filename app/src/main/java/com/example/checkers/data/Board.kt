@@ -124,7 +124,6 @@ class Board {
     }
 
     fun showPossibleDameMovements(x: Int, y: Int, piece: Piece): Int {
-        //TODO: test
         if(canKill(x, y, piece)) {
             return showKillableDameMoves(x,y,piece)
         }

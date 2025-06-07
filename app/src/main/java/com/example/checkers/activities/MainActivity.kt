@@ -15,6 +15,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -26,12 +27,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -61,6 +68,7 @@ import com.example.checkers.data.Cell
 import com.example.checkers.data.constants.CellType
 import com.example.checkers.viewmodels.GameViewModel
 import com.example.checkers.R
+import com.example.checkers.data.GameLog
 import com.example.checkers.data.GameResultBuilder
 import com.example.checkers.data.constants.Teams
 import com.example.checkers.data.local.entity.GameResult
@@ -70,6 +78,8 @@ import com.example.checkers.viewmodels.ResultViewModel
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
+
+    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -79,14 +89,15 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-
+            val windowSizeClass = calculateWindowSizeClass(this)
             CheckersTheme {
                 Surface (modifier = Modifier.fillMaxSize(),
                     color = Color(0xFF2E3B4E))
                 {
                     MyApp(
                         game = game,
-                        result = resultViewModel
+                        result = resultViewModel,
+                        isTablet = isTablet(windowSizeClass)
                     )
 
                 }
@@ -100,7 +111,8 @@ class MainActivity : ComponentActivity() {
 private fun MyApp(
     modifier: Modifier = Modifier,
     game: GameViewModel,
-    result: ResultViewModel
+    result: ResultViewModel,
+    isTablet: Boolean
 ) {
 
     //DAta from store
@@ -113,7 +125,7 @@ private fun MyApp(
     if (config == null) {
         CircularProgressIndicator()
     } else {
-        LoadGame(context, config!!, game, result)
+        LoadGame(context, config!!, game, result, isTablet)
     }
 
 
@@ -124,7 +136,7 @@ private fun MyApp(
 }
 
 @Composable
-private fun LoadGame(context: Context, config: DataStoreManager.ConfigData, game: GameViewModel, result: ResultViewModel, modifier: Modifier = Modifier) {
+private fun LoadGame(context: Context, config: DataStoreManager.ConfigData, game: GameViewModel, result: ResultViewModel, isTablet: Boolean, modifier: Modifier = Modifier) {
 
 
     val alias = config.alias
@@ -166,7 +178,7 @@ private fun LoadGame(context: Context, config: DataStoreManager.ConfigData, game
             ShowDialog(endingMessage, team, alias,  timeDeadline, remainingTime, stopTimer, game, result, context)
         }
 
-        BoardScreen(isLandscape, timeDeadline, remainingTime, stopTimer, whiteTeam, alias, game)
+        BoardScreen(isLandscape, timeDeadline, remainingTime, stopTimer, whiteTeam, alias, game, isTablet)
     }
 }
 @Composable
@@ -178,13 +190,14 @@ private fun BoardScreen(
     whiteTeam: Boolean,
     alias: String,
     game: GameViewModel,
+    isTablet: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val cells = game.cells
     if (isLandscape) {
-        HorizontalBoard(timeDeadline, remainingTime, stopTimer, whiteTeam, alias, cells, game)
+        HorizontalBoard(timeDeadline, remainingTime, stopTimer, whiteTeam, alias, cells, game, isTablet)
     } else {
-        VerticalBoard(timeDeadline, remainingTime, stopTimer, whiteTeam, alias, cells, game)
+        VerticalBoard(timeDeadline, remainingTime, stopTimer, whiteTeam, alias, cells, game, isTablet)
     }
 }
 @Composable
@@ -196,22 +209,25 @@ private fun VerticalBoard(
     alias: String,
     cells: MutableState<Array<Array<Cell>>>,
     game: GameViewModel,
+    isTablet: Boolean,
     modifier: Modifier = Modifier,
 )
 {
-    Column (modifier = modifier.padding(top = 100.dp, start = 8.dp, end = 8.dp)) {
+    val context = LocalContext.current
+    val paddingValues = if(isTablet) PaddingValues(top = 100.dp, start = 25.dp, end = 25.dp) else PaddingValues(top = 100.dp, start = 8.dp, end = 8.dp)
+    Column (modifier = modifier.padding(paddingValues)) {
 
-        if(timeDeadline) Timer(remainingTime, stopTimer, onTimeFinish = { onTimeEnd(game) }, modifier)
+        if(timeDeadline) Timer(remainingTime, stopTimer, onTimeFinish = { onTimeEnd(game) }, game, modifier)
 
         GameHeader(whiteTeam, alias)
 
         for(y in 1..8) {
-            Row (modifier.height(50.dp)) {
+            Row (if(isTablet) modifier.height(80.dp) else modifier.height(50.dp)) {
                 for (x in 1..8){
                     val cell = cells.value[y][x]
                     Box(
                         modifier = Modifier
-                            .weight(1f)
+                            .weight(if(isTablet) 0.90f else 1f)
                             .fillMaxSize()
                             .background(
                                 if (cell.type == CellType.BROWN) Color(0xFF734222)
@@ -219,13 +235,18 @@ private fun VerticalBoard(
                             )
                     )
                     {
-                        Piece(cell, game, x, y)
+                        Piece(cell, game, x, y, isTablet)
                     }
                 }
             }
         }
         Footer(game)
         TurnCounter(game)
+
+        if (isTablet) {
+            WhiteText(stringResource(R.string.logs), fonSize = 24.sp)
+            GameLogs(context, game.getLogMessages())
+        }
 
     }
 }
@@ -238,17 +259,20 @@ private  fun HorizontalBoard(
     alias: String,
     cells: MutableState<Array<Array<Cell>>>,
     game: GameViewModel,
+    isTablet: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val loading = game.loading
+    val context = LocalContext.current
+    val paddingValues: PaddingValues = if(isTablet) PaddingValues(top = 50.dp, end = 10.dp, bottom = 50.dp) else PaddingValues(top = 20.dp, end = 8.dp, bottom = 16.dp)
     Row (
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxWidth()
     ) {
         Column (
             modifier = modifier
-                .weight(2f)
-                .padding(top = 20.dp, end = 8.dp, bottom = 16.dp))
-        {
+                .weight(if(isTablet) 1f else 2f)
+                .padding(paddingValues)
+        ) {
             for(y in 1..8) {
                 Row (modifier.weight(1f)) {
                     for (x in 1..8){
@@ -263,7 +287,7 @@ private  fun HorizontalBoard(
                                 )
                         )
                         {
-                            Piece(cell, game, x, y)
+                            Piece(cell, game, x, y, isTablet)
                         }
                     }
                 }
@@ -277,11 +301,29 @@ private  fun HorizontalBoard(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
-            if(timeDeadline) Timer(remainingTime, stopTimer, onTimeFinish = { onTimeEnd(game) }, modifier.padding(end = 8.dp))
+            if(timeDeadline) Timer(remainingTime, stopTimer, onTimeFinish = { onTimeEnd(game) }, game, modifier.padding(end = 8.dp))
             GameHeader(whiteTeam, alias)
             Footer(game)
             TurnCounter(game)
-            LoadingIndicator(loading)
+            if (isTablet) {
+                Row (modifier = Modifier.fillMaxWidth()){
+                    Column(modifier = Modifier
+                        .weight(2f)
+                        .padding(8.dp)) {
+                        WhiteText(stringResource(R.string.logs), fonSize = 24.sp)
+                        GameLogs(context, game.getLogMessages())
+                    }
+                    Column(modifier = Modifier
+                        .weight(1f)
+                        .padding(8.dp)) {
+                        LoadingIndicator(loading)
+                    }
+                }
+
+            } else {
+                LoadingIndicator(loading)
+            }
+
         }
     }
 
@@ -419,16 +461,16 @@ private fun calcRemainingTime(remainingTime: MutableState<Int>) : String {
 }
 
 @Composable
-fun Timer(remainingTime: MutableState<Int>, shouldStop: MutableState<Boolean>, onTimeFinish: () -> Unit, modifier: Modifier = Modifier) {
+fun Timer(remainingTime: MutableState<Int>, shouldStop: MutableState<Boolean>, onTimeFinish: () -> Unit, game: GameViewModel, modifier: Modifier = Modifier) {
 
     LaunchedEffect(remainingTime) {
         while (remainingTime.value > 0 && !shouldStop.value) {
             delay(1000L)
             remainingTime.value--
+            game.addLog(GameLog(GameLog.REMAINING_TIME, calcRemainingTime(remainingTime)))
         }
         if(!shouldStop.value) onTimeFinish()
     }
-
     val time = calcRemainingTime(remainingTime)
     val text = stringResource(R.string.remaining_time) + ": " + time
 
@@ -481,7 +523,7 @@ private fun GameHeader(whiteTeam: Boolean, alias: String) {
 }
 
 @Composable
-private fun Piece(cell: Cell, game: GameViewModel, x: Int, y: Int) {
+private fun Piece(cell: Cell, game: GameViewModel, x: Int, y: Int, isTablet: Boolean) {
     if(cell.isFilled() || cell.isPossibleMovement()) {
         val image = when {
             cell.isPossibleMovement() -> R.drawable.possible_movement
@@ -497,7 +539,7 @@ private fun Piece(cell: Cell, game: GameViewModel, x: Int, y: Int) {
                 painter = painterResource(id = it),
                 contentDescription = "Piece",
                 modifier = Modifier
-                    .size(60.dp)
+                    .size(if (isTablet) 80.dp else 60.dp)
                     .clickable(
                         enabled = (cell.piece != null && cell.piece!!.team == game.getActualTurn() && !game.isForceKill())
                                 || cell.isPossibleMovement()
@@ -569,7 +611,19 @@ private fun TurnCounter(game: GameViewModel, modifier: Modifier = Modifier) {
     )
 }
 
+@Composable
+private fun GameLogs(context: Context, logs: List<GameLog>) {
+
+    LazyColumn (modifier = Modifier.padding(bottom = 50.dp)) {
+        items (logs) { gameLog ->
+            WhiteText(GameLog.getString(context, gameLog))
+        }
+    }
+
+
+}
 
 fun onTimeEnd(game: GameViewModel) {
+    game.addLog(GameLog(GameLog.TIME_LIMIT))
     game.gameEnds("TIME ENDED", "CPU")
 }

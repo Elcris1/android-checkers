@@ -97,5 +97,14 @@
     <string name="no">No</string>
     <string name="game_leftover_time">Leftover time</string>
     <string name="game_no_leftover">Not enabled</string>
+    <string name="logs">Logs</string>
+    <string name="logs_time_left">Time left: %s</string>
+    <string name="logs_movement">Movment of team %s from %s to %s</string>
+    <string name="logs_kill">%s capture from %s</string>
+    <string name="logs_black_pieces">Number of black pieces: %s</string>
+    <string name="logs_win">%s has won!</string>
+    <string name="logs_time_limit">Time limit passed</string>
+    <string name="logs_white_pieces">Number of white pieces: %s</string>
+    <string name="logs_turn">Turn: %s</string>
 
 </resources>

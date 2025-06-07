@@ -1,19 +1,24 @@
 package com.example.checkers.viewmodels
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.checkers.data.Board
 import com.example.checkers.data.Cell
+import com.example.checkers.data.GameLog
 import com.example.checkers.data.Piece
 import com.example.checkers.data.Position
 import com.example.checkers.data.constants.Teams
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class GameViewModel: ViewModel() {
+
+class GameViewModel : ViewModel() {
 
     //TODO: privatize vars
 
@@ -43,6 +48,9 @@ class GameViewModel: ViewModel() {
     //Force kill user rule
     private var forceKill = false
     private var availablePieces: MutableList<Piece> = mutableListOf()
+
+    //Game logs
+    private val logs = mutableStateListOf<GameLog>()
 
     fun getBlackCount(): Int {
         return blackCount
@@ -74,6 +82,28 @@ class GameViewModel: ViewModel() {
 
     fun isForceKill(): Boolean {
         return forceKill
+    }
+
+    fun getLogMessages() : MutableList<GameLog> {
+        return logs
+    }
+
+    fun addLog(gameLog: GameLog) {
+        logs.add(gameLog)
+    }
+
+    fun clearLogs() {
+        logs.clear()
+    }
+
+    private fun reduceBlackCount() {
+        blackCount--
+        addLog(GameLog(GameLog.NUMBER_OF_BLACK, blackCount.toString()))
+    }
+
+    private fun reduceWhiteCount() {
+        whiteCount--
+        addLog(GameLog(GameLog.NUMBER_OF_WHITE, whiteCount.toString()))
     }
 
 
@@ -116,9 +146,16 @@ class GameViewModel: ViewModel() {
         if(board.movePiece(selectedCell.x, selectedCell.y, x, y)) {
             //if true is a killer movement
             val  cell = board.getCell(x, y)
-            if (turn == Teams.WHITE) blackCount--
-            if(turn == Teams.BLACK) whiteCount--
+            if (turn == Teams.WHITE) reduceBlackCount()
+            if(turn == Teams.BLACK) reduceWhiteCount()
             board.unMarkPossibleMovements()
+
+            //Add kill to logs
+            addLog(GameLog(GameLog.KILL_MOVEMENT, turn.toString(), selectedCell.toString()))
+
+            //log turn count
+            addLog(GameLog(GameLog.TURN, turnCount.toString()))
+
             if (board.canKill(x, y, cell.piece!!)){
                 if (turn == playerTeam) {
                     //mark multi-kill as mandatory
@@ -134,6 +171,10 @@ class GameViewModel: ViewModel() {
 
                 }
             }
+        } else {
+            //add Movement to logs
+            addLog(GameLog(GameLog.MOVEMENT, turn.toString(), selectedCell.toString(), Position(x,y).toString()))
+            addLog(GameLog(GameLog.TURN, turnCount.toString()))
         }
         forceKill = false
         board.unMarkPossibleMovements()
@@ -214,6 +255,14 @@ class GameViewModel: ViewModel() {
     }
     fun gameEnds(msg: String, winner: String): Boolean {
         Log.d("GAME ANNOUNCER", msg)
+        val cpuTeam = if (playerTeam == Teams.WHITE) Teams.BLACK.toString() else Teams.WHITE.toString()
+
+        var teamWinner = if (winner == "WHITE WINS!") Teams.WHITE.toString() else Teams.BLACK.toString()
+        if (winner == "CPU") {
+            teamWinner = cpuTeam
+        }
+        addLog(GameLog(GameLog.VICTORY, teamWinner))
+
         viewModelScope.launch {
             mensaje.value = winner
         }

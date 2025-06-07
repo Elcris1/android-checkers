@@ -101,6 +101,17 @@
     <string name="no">No</string>
     <string name="game_leftover_time">Tiempo Restante</string>
     <string name="game_no_leftover">No habilitado</string>
+
+
+    <string name="logs">Registros de la partida</string>
+    <string name="logs_time_left">Tiempo restante: %s</string>
+    <string name="logs_movement">Movimiento del equipo %s de %s a $s</string>
+    <string name="logs_kill">Captura del equipo %s desde %s</string>
+    <string name="logs_time_limit">Límite de tiempo superado</string>
+    <string name="logs_white_pieces">Número de piezas blancas: %s</string>
+    <string name="logs_black_pieces">Número de piezas negras: %s</string>
+    <string name="logs_win">El equipo %s ha ganado!</string>
+    <string name="logs_turn">Turno: %s</string>
     
 
 </resources>
