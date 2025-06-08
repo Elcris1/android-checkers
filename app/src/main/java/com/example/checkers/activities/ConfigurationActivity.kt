@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -117,7 +118,7 @@ private fun MyApp() {
                 .padding(horizontal = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            //TODO: make outlinedFieldText as composable funciton and rehutilizable
+
             // Alias
             OutlinedTextField(
                 value = alias,
@@ -248,9 +249,10 @@ private fun MyApp() {
                 }
             }
 
-            // TODO: show toast
+            val toastText = stringResource(R.string.toast_save_configuration)
             Button(
                 onClick = {
+                    Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show()
                     scope.launch {
                         dataStoreManager.saveToDataStore(
                             alias,

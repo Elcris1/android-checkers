@@ -179,12 +179,10 @@ class BoardTest {
 
     @Test
     fun isDiagonalLeftKillable_whitePawn(){
-        //TODO
     }
 
     @Test
     fun isDiagonalLeftKillable_blackPawn() {
-        //TODO
     }
 
     @Test

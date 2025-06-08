@@ -112,6 +112,8 @@
     <string name="logs_black_pieces">Número de piezas negras: %s</string>
     <string name="logs_win">El equipo %s ha ganado!</string>
     <string name="logs_turn">Turno: %s</string>
+
+    <string name="toast_save_configuration">Preferencias guardadas con éxito!</string>
     
 
 </resources>

@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,6 +38,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.checkers.R
+import com.example.checkers.components.GoBackAppBar
 import com.example.checkers.ui.theme.CheckersTheme
 
 class HelpActivity : ComponentActivity() {
@@ -44,10 +46,12 @@ class HelpActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            //TODO: añadir go back bar
             CheckersTheme {
-                Surface (modifier = Modifier.fillMaxSize()) {
-                    HelpLayout()
+                Scaffold(
+                    topBar = { GoBackAppBar(stringResource(R.string.how_game_works)) },
+                    containerColor = Color(0xFF2E3B4E)
+                ) { innerPadding ->
+                    HelpLayout(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -63,20 +67,19 @@ fun HelpLayout(modifier: Modifier = Modifier) {
     val actualPage = rememberSaveable { mutableStateOf(0) }
 
     if (isLandscape) {
-        Horizontal(actualPage, context)
+        Horizontal(actualPage, context, modifier)
     } else {
-        Vertical(actualPage, context)
+        Vertical(actualPage, context, modifier)
     }
 }
 @Composable
-private fun Horizontal(actualPage: MutableState<Int>, context: Context) {
+private fun Horizontal(actualPage: MutableState<Int>, context: Context, modifier: Modifier = Modifier) {
     val scrollState = rememberScrollState()
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(Color(0xFF2E3B4E))
-            .padding(16.dp)
             .verticalScroll(scrollState),
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -98,17 +101,13 @@ private fun Horizontal(actualPage: MutableState<Int>, context: Context) {
             }
 
         }
-        Row (modifier = Modifier.padding(top = 16.dp)) {
-            PersonalizedButton(stringResource(R.string.go_back), onClick = { (context as Activity).finish() })
-
-        }
     }
 }
 
 @Composable
-private fun Vertical(actualPage: MutableState<Int>, context: Context) {
+private fun Vertical(actualPage: MutableState<Int>, context: Context, modifier: Modifier = Modifier) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(Color(0xFF2E3B4E))
             .padding(16.dp),
@@ -123,7 +122,6 @@ private fun Vertical(actualPage: MutableState<Int>, context: Context) {
 
         Help(actualPage)
 
-        PersonalizedButton(stringResource(R.string.go_back), onClick = { (context as Activity).finish() })
     }
 }
 @Composable
@@ -145,12 +143,7 @@ private fun Help(actualPage: MutableState<Int>) {
         stringResource(R.string.text_dame)
     )
 
-    Text(
-        text = stringResource(R.string.how_game_works),
-        fontSize = 22.sp,
-        fontWeight = FontWeight.Bold,
-        color = Color.White
-    )
+
 
     Text(
         text = titles[actualPage.value],

@@ -20,8 +20,6 @@ import javax.inject.Inject
 
 class GameViewModel : ViewModel() {
 
-    //TODO: privatize vars
-
     init {
         Log.d("GameViewModel", "ViewModel inicializado")
     }

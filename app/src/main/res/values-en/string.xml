@@ -106,5 +106,6 @@
     <string name="logs_time_limit">Time limit passed</string>
     <string name="logs_white_pieces">Number of white pieces: %s</string>
     <string name="logs_turn">Turn: %s</string>
+    <string name="toast_save_configuration">Preferences saved successfully!</string>
 
 </resources>

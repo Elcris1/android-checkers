@@ -136,7 +136,6 @@ private fun VerticalApp(context: Context, modifier: Modifier = Modifier) {
 }
 
 
-//TODO: make button as component
 @Composable
 fun PersonalizedButton(txt: String, onClick: () -> Unit) {
     Button(

@@ -384,13 +384,11 @@ private fun ShowDialog(
             intent.putExtra("result", if(userTeam== Teams.WHITE) Teams.BLACK.toString() else Teams.WHITE.toString())
         }
 
-        //TODO: add message for more context
         gameResultBuilder.timeDeadLine = timeDeadline
         gameResultBuilder.result = title
         intent.putExtra("alias", alias)
         gameResultBuilder.alias = alias
         intent.putExtra("userTeam", userTeam.toString())
-        //TODO: FIX THIS
         gameResultBuilder.userTeam = userTeam.toString()
         intent.putExtra("numberPiecesUser", game.getNumberUserPieces())
         gameResultBuilder.userPieces = game.getNumberUserPieces()
